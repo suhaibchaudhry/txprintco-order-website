@@ -1,0 +1,92 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+body{
+	font: 62.5% "Trebuchet MS", sans-serif;
+	margin: 50px;
+}
+.demoHeaders {
+	margin-top: 2em;
+}
+#dialog-link {
+	padding: .4em 1em .4em 20px;
+	text-decoration: none;
+	position: relative;
+}
+#dialog-link span.ui-icon {
+	margin: 0 5px 0 0;
+	position: absolute;
+	left: .2em;
+	top: 50%;
+	margin-top: -8px;
+}
+#icons {
+	margin: 0;
+	padding: 0;
+}
+#icons li {
+	margin: 2px;
+	position: relative;
+	padding: 4px 0;
+	cursor: pointer;
+	float: left;
+	list-style: none;
+}
+#icons span.ui-icon {
+	float: left;
+	margin: 0 4px;
+}
+.fakewindowcontain .ui-widget-overlay {
+	position: absolute;
+}
+.ui-menu { 
+	width: 150px;
+	/*margin-bottom: 10px; */
+}
+
+.content
+{
+	width: 100%;
+
+}
+
+.side-bar
+{
+	float: left;
+	width: 150px;
+	margin-right: 10px;
+}
+
+.products
+{
+	float: left;
+	width: 550px;
+	/*background: blue;*/
+}
+
+.product-form
+{
+	float: left;
+	width: 550px;
+	/*background: blue;*/
+}
+
+select
+{
+	width: 200px;
+	font-size: 1.2em;
+	margin-bottom: 5px;
+}
+
+.one-option
+{
+	width: 190px;
+	font-size: 1.2em;
+	margin-bottom: 5px;
+	background: #E0E0E0;
+	color: #3B3B3B;
+	padding: 5px;
+	-webkit-box-shadow: inset 0px 0px 1px 1px #D1D1D1;
+    box-shadow: inset 0px 0px 1px 1px #D1D1D1;
+}
