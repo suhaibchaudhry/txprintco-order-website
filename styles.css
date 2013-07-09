@@ -74,14 +74,26 @@ body{
 
 select
 {
-	width: 200px;
+	width: 250px;
 	font-size: 1.2em;
 	margin-bottom: 5px;
 }
 
 .one-option
 {
-	width: 190px;
+	width: 250px;
+	font-size: 1.2em;
+	margin-bottom: 5px;
+	background: #E0E0E0;
+	color: #3B3B3B;
+	padding: 5px;
+	-webkit-box-shadow: inset 0px 0px 1px 1px #D1D1D1;
+    box-shadow: inset 0px 0px 1px 1px #D1D1D1;
+}
+
+.one-tat-option
+{
+	width: 250px;
 	font-size: 1.2em;
 	margin-bottom: 5px;
 	background: #E0E0E0;
