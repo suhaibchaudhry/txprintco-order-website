@@ -5,6 +5,9 @@ $(document).ready(function() {
 	$tat_wrap = $('div.tat-wrap');
 	$options_wrap = $('div.options-wrap');
 	$order_details = $('div.order-details');
+	$base_price = $('div.product-base-price');
+	
+	$base_price.hide();
 
 	$('div.runsizes-wrap select.runsizes').change(function(){
 		var runsize = $(this).val();
@@ -46,6 +49,7 @@ function template_get_colors(runsize) {
 		var last_val = '';
 
 		var $color_select = $colors_wrap.find('select.colors');
+		$color_select.append('<option value="select">--Select Color--</option>');
 
 		count = 0;
 		$.each(colors, function(key, val) {
@@ -55,7 +59,7 @@ function template_get_colors(runsize) {
 			count++;
 		});
 
-		// Add a event handler on .runsize-colors
+		// Add a event handler on colors
 		$color_select.change(function() {
 			template_get_tat(runsize, $(this).val());
 		});
@@ -63,7 +67,7 @@ function template_get_colors(runsize) {
 		if(count < 2) {
 			$color_select.hide();
 			template_get_tat(runsize, last_key);
-			$colors_wrap.append('<div class="one-option">'+ last_val +'</di>');
+			$colors_wrap.append('<div class="one-option">'+ last_val +'</div>');
 		}
 
 	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'"]'});
@@ -71,20 +75,43 @@ function template_get_colors(runsize) {
 
 
 function template_get_tat(runsize, color) {
-	console.log(color);
-/*
+	
   makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/tat", function(data){
-
-    console.log(data);
-    // Remove .runsize-tat drop down and h2 heading if it exists
-    if($('product-details').find('.runsize-tat') || $('product-details').find('.one-tat-option'))
-    {
-      $('.runsize-tat').prev().remove();
-      $('.runsize-tat').remove();
-      $('.one-tat-option').prev().remove();
-      $('.one-tat-option').remove();
-
-    }
+	
+	makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/price", function(data_price){
+		console.log(data_price);
+		
+	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color +'"]'});
+	
+	console.log(color);
+	console.log(data);
+	
+	tat = data['rows'][0]['value'];
+	$tat_wrap.empty().append('<h2>Select a turn around time:</h2><select class="tat"></select>');
+	
+	var last_ket = '';
+	var last_value = '';
+	
+	var $tat_select = $tat_wrap.find('select.tat');
+	
+	count = 0;
+	$.each(tat, function(key, val){
+		$tat_select.append('<option value="' + key + '">' + val + '</option>');
+		last_ket = key;
+		last_val = val;
+		count++;
+	});
+	
+	// Add a event handler on tat
+	// TODO:
+	
+	if( count < 2){
+		$tat_select.hide();
+		
+		$tat_wrap.append('<div class="one-option">' + last_val + '<div>');
+	}
+	
+   /* 
     console.log(data['rows'][0]['value']);
     for(var h in data['rows'][0]['value'])
     {
@@ -118,10 +145,10 @@ function template_get_tat(runsize, color) {
         var tat = $(this).val();
         console.log(tat);
         // template_get_tat(runsize, color);
-      });
+      });*/
 
   }, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color +'"]'});
-*/
+
 //}
 
 

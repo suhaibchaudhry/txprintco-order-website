@@ -102,3 +102,37 @@ select
 	-webkit-box-shadow: inset 0px 0px 1px 1px #D1D1D1;
     box-shadow: inset 0px 0px 1px 1px #D1D1D1;
 }
+
+.product-title
+{
+	padding: 10px;
+	margin: 5px;
+	margin-bottom: 10px;
+	/*background: #ff0030;*/
+	background: #292929;
+	color: #eeeeee;
+	font-weight: bold;
+	line-height: 1.3em;
+	border: 2px dashed #fff;
+	border-radius: 10px;
+	box-shadow: 0 0 0 4px #474747, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+	/*text-shadow: -1px -1px #aa3030;*/
+	font-weight: normal;
+}
+
+.product-base-price
+{
+	padding: 10px;
+	margin: 5px;
+	margin-bottom: 10px;
+	/*background: #ff0030;*/
+	background: #292929;
+	color: #ff0030;
+	font-weight: bold;
+	line-height: 1.3em;
+	border: 2px dashed #fff;
+	border-radius: 10px;
+	box-shadow: 0 0 0 4px #474747, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+	/*text-shadow: -1px -1px #aa3030;*/
+	font-weight: normal;
+}

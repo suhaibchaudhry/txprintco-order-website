@@ -45,13 +45,14 @@ function template_product_details()
 	// debug($product_runsizes);
 
 	$content = '<div class="product-details">';
-	$content .= '<div class="title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
-	$content .= '<div class="base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
+	$content .= '<div class="product-title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
+	//$content .= '<div class="product-base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
+	$content .= '<div class="product-base-price"><h3></h3></div>';
 	$content .= '<h2>Select a runsize:</h2>';
 	
 	$content .= '<div class="runsizes-wrap">';
 	$content .= '<select name="runsize" class="runsizes">';
-	$content .= '<option>runsizes....</option>';
+	$content .= '<option value="select">--Select Runsize--</option>';
 	foreach ($product_runsizes as $runsizes => $runsize) {
 		$content .= '<option>' .$runsize . '</option>';
 	}
