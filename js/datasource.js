@@ -192,10 +192,10 @@ function template_reset_base_price() {
 
 function template_get_base_price(runsize, color, tat)
 {
-		// Get the base price for the run size
+	// Get the base price for the run size
 	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/price", function(data){
 		//var data = jQuery.parseJSON(data_price);
-		
+		console.log(data);
 		price = data['rows'][0]['value'];
 		console.log(price);
 		
