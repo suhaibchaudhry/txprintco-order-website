@@ -28,7 +28,7 @@ function makeCouchRequest($request, $json_output = FALSE) {
 	if(!$json_output) {
 		$data = json_decode($data);
 	}
-
+	//debug($data);
 	return $data;
 }
 

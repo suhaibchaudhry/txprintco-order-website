@@ -47,7 +47,7 @@ function template_product_details()
 	$content = '<div class="product-details">';
 	$content .= '<div class="product-title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
 	//$content .= '<div class="product-base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
-	$content .= '<div class="product-base-price"><h3></h3></div>';
+	$content .= '<div class="product-base-price" data-price-title="Base Price" data-base-price="$0.00"><h3><span class="price-title">Base Price</span>: <span class="base-price">$0.00</span></h3></div>';
 	$content .= '<h2>Select a runsize:</h2>';
 	
 	$content .= '<div class="runsizes-wrap">';
