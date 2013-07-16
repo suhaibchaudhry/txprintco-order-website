@@ -28,7 +28,8 @@
 		</div>
 		<div class="products">
 			<ul class="menu">
-				<?php print template_products() ?>
+				<?php /*print template_products()*/ ?> 
+				<?php print template_products_with_subcat() ?>
 			</ul>
 			
 		</div>

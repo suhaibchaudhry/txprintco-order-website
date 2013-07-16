@@ -12,23 +12,53 @@ function template_sidebar() {
 	return '<ul id="menu">'.$content.'</ul>';
 }
 
-function template_products()
-{
-	$category = $_GET['product_cat'];
-	// $url = '/_design/txprintco/_view/products?key="'. $category .'"';
-	$products = makeCouchRequest('/_design/txprintco/_view/products?key="'. urlencode($category) .'"');
-	debug($products);
-	$content = '<div class="category-product-grid">';
+// function template_products()
+// {
+// 	$category = $_GET['product_cat'];
+// 	// $url = '/_design/txprintco/_view/products?key="'. $category .'"';
+// 	$products = makeCouchRequest('/_design/txprintco/_view/products?key="'. urlencode($category) .'"');
+// 	debug($products);
+// 	$content = '<div class="category-product-grid">';
 
-	foreach($products->rows as $product_id => $product) {
-		$content .= '<div class="product-item">';
-		$content .= '<div class="title"><a href="'.base_path().'order.php?product_id='.$product->value->product_id.'">'.$product->value->title.'</a></div>';
-		$content .= '<div class="base-price">'.$product->value->base_price.'</div>';
+// 	foreach($products->rows as $product_id => $product) {
+// 		$content .= '<div class="product-item">';
+// 		$content .= '<div class="title"><a href="'.base_path().'order.php?product_id='.$product->value->product_id.'">'.$product->value->title.'</a></div>';
+// 		$content .= '<div class="base-price">'.$product->value->base_price.'</div>';
+// 		$content .= '</div>';
+// 	}
+
+// 	$content .= '</div>';
+
+// 	return $content;
+// }
+
+function template_products_with_subcat()
+{
+	
+	$category = $_GET['product_cat'];
+	$products_with_subcat = makeCouchRequest('/_design/txprintco/_view/products', false, array('startkey' => '["'.$category.'"]', 'endkey' => '["'.$category.'", []]'));
+	//debug($products_with_subcat);
+
+	$content = '';
+	foreach(groupProducts($products_with_subcat) as $row_key => $group) {
+		//$i = 0;
+		//debug($group);
+		$content .= '<div class="product-group">';
+		foreach($group as $index => $product) {
+			//debug($index);
+			//debug($product);
+			if($index == 0) {
+				$content .= '<h2>'.$product->subcat.'</h2>';
+			}
+			$content .= '<div class="product-item">';
+			$content .= '<div class="title"><a href="'.base_path().'order.php?product_id='.$product->product_id.'">'.$product->title.'</a></div>';
+			$content .= '<div class="base-price">'.$product->base_price.'</div>';
+			$content .= '</div>';
+			//$i++;
+		}
 		$content .= '</div>';
 	}
-
-	$content .= '</div>';
-
+	
 	return $content;
 }
 

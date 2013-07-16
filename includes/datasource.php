@@ -12,14 +12,16 @@ function debug($var) {
 	}
 }
 
-function makeCouchRequest($request, $json_output = FALSE) {
+function makeCouchRequest($request, $json_output = FALSE, $reqData = NULL) {
 	global $config;
 
 	$url = "http://".$config['couchdb']['user'].":".$config['couchdb']['pass'].'@'.$config['couchdb']['host'].":".$config['couchdb']['port']."/".$config['couchdb']['database'].$request;
-	// var_dump($url);
-	$ch = curl_init($url);
+	if(!is_null($reqData)) {
+		$url .= '?'.http_build_query($reqData);
+	}
 
-	$options = array(CURLOPT_RETURNTRANSFER => true);
+	$ch = curl_init($url);
+ 	$options = array(CURLOPT_RETURNTRANSFER => true);
 	// Setting curl options
 	curl_setopt_array($ch, $options);
 
@@ -28,7 +30,7 @@ function makeCouchRequest($request, $json_output = FALSE) {
 	if(!$json_output) {
 		$data = json_decode($data);
 	}
-	//debug($data);
+// 	debug($data);
 	return $data;
 }
 
@@ -36,6 +38,19 @@ function get_products($product_cat)
 {
 	$products = makeCouchRequest("/_design/txprintco/_view/products");
 	debug($products);
+}
+
+function groupProducts($doc) {
+	$groups = array();
+	foreach($doc->rows as $row) {
+		if(!is_array($groups[$row->value->subcat])) {
+			$groups[$row->value->subcat] = array();
+		}
+
+		$groups[$row->value->subcat][] = $row->value;
+	}
+
+	return $groups;
 }
 
 function base_path() {

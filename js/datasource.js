@@ -45,7 +45,7 @@ function makeCouchRequest(url, callback, data) {
 
 	$.ajax(options);
 }
-
+s
 function template_get_colors(runsize) {
 	var  colors, count;
 
@@ -212,4 +212,6 @@ function template_get_base_price(runsize, color, tat)
 
 
 	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
+	
+	
 }
