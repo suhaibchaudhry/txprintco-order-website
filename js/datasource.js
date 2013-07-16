@@ -211,5 +211,5 @@ function template_get_base_price(runsize, color, tat)
 		});
 
 
-	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color +'"]'});
+	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
 }
