@@ -93,6 +93,8 @@ function template_product_details()
 	$content .= '<div class="tat-wrap"></div>';
 	$content .= '<div class="options-wrap"></div>';
 	
+	$content .= '<div class="shipping-wrap"></div>';
+
 	$content .= '<div class="order-details"></div>';
 	
 	$content .= '</div>';

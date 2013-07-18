@@ -5,6 +5,7 @@ $(document).ready(function() {
 	$colors_wrap = $('div.colors-wrap');
 	$tat_wrap = $('div.tat-wrap');
 	$options_wrap = $('div.options-wrap');
+	$shipping_wrap = $('div.shipping-wrap');
 	$order_details = $('div.order-details');
 	//$base_price = $('div.product-base-price');
 
@@ -19,6 +20,8 @@ $(document).ready(function() {
 		selected_runsize = $(this).val();
 		//console.log($tat_wrap.is(':empty'));
 		// $tat_wrap.hide(); // Hide the tat_wrap if a previous one existed.
+		template_reset_base_price();
+		reset_shipping_table();
 		template_get_colors(selected_runsize);
 	});
 });
@@ -45,7 +48,7 @@ function makeCouchRequest(url, callback, data) {
 
 	$.ajax(options);
 }
-s
+
 function template_get_colors(runsize) {
 	var  colors, count;
 
@@ -74,11 +77,20 @@ function template_get_colors(runsize) {
 
 		// Add a event handler on colors
 		$color_select.change(function() {
-			// var selected_color = $(this).val();
-			// console.log(selected_color);
 			selected_color = $(this).val();
-			//$tat_wrap.show();
-			template_get_tat(runsize, selected_color);
+			if(selected_color == 'select')
+			{
+				$tat_wrap.empty();
+				template_reset_base_price();
+				reset_shipping_table();
+			}
+			else
+			{
+				get_best_price(runsize, selected_color);
+				reset_shipping_table();
+				template_get_tat(runsize, selected_color);	
+			}
+			
 		});
 		
 		if(count < 2) {
@@ -95,13 +107,8 @@ function template_get_tat(runsize, color) {
 
   // makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/tat", function(data){ // For Apache
 makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/tat", function(data){
-	//console.log(json_data);
-	//var data = jQuery.parseJSON(json_data);
-	// console.log(color);
-	// console.log(data);
-	console.log(data);
+
 	tat = data['rows'][0]['value'];
-	// console.log(tat);
 	$tat_wrap.html('<h2>Select a turn around time:</h2><select class="tat"></select>');
 	
 	var last_ket = '';
@@ -121,67 +128,71 @@ makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprin
 	// Add a event handler on tat
 	$tat_select.change(function() {
 		var selected_tat = $(this).val();
-		console.log(selected_tat);
+		// console.log(selected_tat);
 		var $runsize = $runsizes_wrap.find('select.runsizes');
 		var $color = $colors_wrap.find('select.colors');
-		console.log($runsize.val());
-		template_get_base_price($runsize.val(), $color.val(), $(this).val());
+		// console.log($runsize.val());
+
+		var first_child = $tat_select.find('option:first-child').val();
+		if(first_child == selected_tat) // First option on tat, if selected reset shipping table and get the best price
+		{
+			get_best_price($runsize.val(), $color.val());
+			reset_shipping_table();
+		}
+		else // Anyother option on tat, get the base price and populate shipping table
+		{
+			template_get_base_price($runsize.val(), $color.val(), $(this).val());
+			template_get_shipping($runsize.val(), $color.val(), $(this).val());
+	
+		}
+		
+
+
 	});
 	
 	if( count < 2){
-		$tat_select.hide();
-		
-		$tat_wrap.append('<div class="one-option">' + last_val + '<div>');
-	}
-	
-   /* 
-    console.log(data['rows'][0]['value']);
-    for(var h in data['rows'][0]['value'])
-    {
-      count = data['rows'][0]['value'][h].length;
-      console.log(count);
-    }
-    if(count > 1)
-    {
-      // Add a heading and append a drop down to the form
-      $('.product-details').append($('<h2>Select a turn around time:</h2>'));
-      $('.product-details').append($('<select>').addClass('runsize-tat'));
 
-      // console.log(data['rows'][0]['value'][1693741]);
-      for (var i in data['rows'][0]['value']) {
-        for (var j in data['rows'][0]['value'][i]) {
-          $('.runsize-tat').append('<option>'+ data['rows'][0]['value'][i][j] +'</option>');
-        }
-      }
-    }
-    else
-    {
-      $('.product-details').append($('<h2>Turn around time:</h2>'));
-      for (var k in data['rows'][0]['value']) {
-        for (var l in data['rows'][0]['value'][k]) {
-          $('.product-details').append('<div class="one-tat-option">'+ data['rows'][0]['value'][k][l] +'</div>');
-        }
-      }
-    }
-    // Add a event handler on .runsize-tat
-    $('.runsize-tat').change(function(){
-        var tat = $(this).val();
-        console.log(tat);
-        // template_get_tat(runsize, color);
-      });*/
+		$tat_select.hide();
+		$tat_wrap.append('<div class="one-option">' + last_val + '<div>');
+		one_option_value = $tat_wrap.find('select.tat option:nth-child(2)').val();
+		// console.log(one_option_value);
+		// get_best_price(runsize, color);
+		$
+		template_get_base_price(runsize, color, one_option_value);
+		template_get_shipping(runsize, color, one_option_value);
+	}
 
   }, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color +'"]'});
+}
 
-//}
+function template_get_shipping(runsize, color, tat) {
 
+	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/price", function(data){
+		//var data = jQuery.parseJSON(data_price);
+		console.log(data);
+		shipping = data['rows'][0]['value'][tat]['defaultShipping'];
+		console.log(shipping);
+		
+		$shipping_wrap.html('<h2>Shipping Table</h2><table class="shipping-table"></table>');
 
-// function getProductDetails() {
-// 	console.log("Function was called");
-// 	//alert("Function was called");
-// 	// var the_url = "http://127.0.0.1:5984/tpc_product_documents/_design/txprintco/_view/products?key=%22Akuafoil%22"
-// 	makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/products_details", function(data) {
-//     console.log(data);
-//   }, {key: '"'+js_config.product_id+'"'});
+		var $shipping_table = $shipping_wrap.find('table.shipping-table');
+		// console.log($shipping_table);
+		// $shipping_table.append('<tr><th>Shipping Type</th><th>Price</th></tr>');
+
+		$.each(shipping, function(key, val){
+			if(key == 'originEnglish')
+			{
+				$shipping_table.append('<tr><td><h3>This product will be shipped from: '+ val +'</h3></td></tr>');		
+			}
+		});
+		$.each(shipping, function(key, val){
+			if(!(key == 'originEnglish' || key == 'originCode'))
+			{
+				$shipping_table.append('<tr><td>'+ val +'</td></tr>');
+			}
+		});
+	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
+
 }
 
 function template_reset_base_price() {
@@ -189,21 +200,24 @@ function template_reset_base_price() {
 	$base_price.find('span.price-title').html($base_price.data('price-title'));
 	$base_price.find('span.base-price').html($base_price.data('base-price'));
 }
+function reset_shipping_table(){
+	$shipping_wrap.empty();
+}
 
 function template_get_base_price(runsize, color, tat)
 {
 	// Get the base price for the run size
 	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/price", function(data){
 		//var data = jQuery.parseJSON(data_price);
-		console.log(data);
+		// console.log(data);
 		price = data['rows'][0]['value'];
-		console.log(price);
+		// console.log(price);
 		
 		$.each(price, function(key, val){
-			console.log(key);
+			// console.log(key);
 			if(key === tat)
 			{
-				console.log(price[key].base_price);
+				// console.log(price[key].base_price);
 				//$base_price.show().empty().append('<h3>Base Price: '+ price[key].base_price +'</h3>');
 				$product_datails.find('.product-base-price span.price-title').html('Subtotal');
 				$product_datails.find('.product-base-price span.base-price').html(price[key].base_price);
@@ -214,4 +228,18 @@ function template_get_base_price(runsize, color, tat)
 	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
 	
 	
+}
+
+function get_best_price(runsize, color)
+{
+	bs = 0;
+	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/best_price", function(data) {
+
+    	// console.log(data);
+    	bs = data['rows'][0]['value'];
+    	// console.log(bs);
+    	$product_datails.find('.product-base-price span.price-title').html('Subtotal');
+		$product_datails.find('.product-base-price span.base-price').html(bs);
+  
+  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'});
 }
