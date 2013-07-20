@@ -48,7 +48,7 @@ function groupProducts($doc) {
 		}
 
 		$groups[$row->value->subcat][] = $row->value;
-
+		//Dictionary Sort on product names @Asad
 		usort($groups[$row->value->subcat], function($a, $b) {
 			return strcmp($a->title, $b->title);
 		});
