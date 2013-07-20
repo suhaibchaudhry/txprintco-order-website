@@ -53,7 +53,7 @@ function template_get_colors(runsize) {
 	var  colors, count;
 
 	//makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/colors", function(data){ // For Apache
-		makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/colors", function(data){ 
+		makeCouchRequest(js_config['base_path']+"db/colors", function(data){ 
 		// Add a heading and append a drop down to the form
 		//var data = jQuery.parseJSON(json_data);
 		//console.log(data);
@@ -106,7 +106,7 @@ function template_get_colors(runsize) {
 function template_get_tat(runsize, color) {
 
   // makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/tat", function(data){ // For Apache
-makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/tat", function(data){
+makeCouchRequest(js_config['base_path']+"db/tat", function(data){
 
 	tat = data['rows'][0]['value'];
 	$tat_wrap.html('<h2>Select a turn around time:</h2><select class="tat"></select>');
@@ -167,7 +167,7 @@ makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprin
 
 function template_get_shipping(runsize, color, tat) {
 
-	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/price", function(data){
+	makeCouchRequest(js_config['base_path']+"db/price", function(data){
 		//var data = jQuery.parseJSON(data_price);
 		console.log(data);
 		shipping = data['rows'][0]['value'][tat]['defaultShipping'];
@@ -207,7 +207,7 @@ function reset_shipping_table(){
 function template_get_base_price(runsize, color, tat)
 {
 	// Get the base price for the run size
-	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/price", function(data){
+	makeCouchRequest(js_config['base_path']+"db/price", function(data){
 		//var data = jQuery.parseJSON(data_price);
 		// console.log(data);
 		price = data['rows'][0]['value'];
@@ -233,7 +233,7 @@ function template_get_base_price(runsize, color, tat)
 function get_best_price(runsize, color)
 {
 	bs = 0;
-	makeCouchRequest(js_config['base_path']+"db/tpc_product_documents/_design/txprintco/_view/best_price", function(data) {
+	makeCouchRequest(js_config['base_path']+"db/best_price", function(data) {
 
     	// console.log(data);
     	bs = data['rows'][0]['value'];

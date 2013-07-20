@@ -43,12 +43,20 @@ function get_products($product_cat)
 function groupProducts($doc) {
 	$groups = array();
 	foreach($doc->rows as $row) {
-		if(!is_array($groups[$row->value->subcat])) {
+		if(!isset($groups[$row->value->subcat]) || !is_array($groups[$row->value->subcat])) {
 			$groups[$row->value->subcat] = array();
 		}
 
 		$groups[$row->value->subcat][] = $row->value;
+
+		usort($groups[$row->value->subcat], function($a, $b) {
+			return strcmp($a->title, $b->title);
+		});
 	}
+
+	//ksort($groups, function($a, $b) {
+	//	return strcmp($a, $b);
+	//});
 
 	return $groups;
 }

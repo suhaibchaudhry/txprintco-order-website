@@ -34,7 +34,7 @@ function template_sidebar() {
 
 function template_products_with_subcat()
 {
-	
+	//Memcached Sorted Data or Cron it seperately
 	$category = $_GET['product_cat'];
 	$products_with_subcat = makeCouchRequest('/_design/txprintco/_view/products', false, array('startkey' => '["'.$category.'"]', 'endkey' => '["'.$category.'", []]'));
 	//debug($products_with_subcat);
