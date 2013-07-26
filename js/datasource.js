@@ -20,6 +20,7 @@ $(document).ready(function() {
 		if(selected_runsize == 'select')
 		{
 			$colors_wrap.empty();
+			$tat_wrap.empty();
 			$options_wrap.empty();
 			reset_shipping_table();
 			template_reset_base_price();
@@ -196,7 +197,7 @@ function template_get_options(runsize, color, tat) {
 				$option_select.append('<option value="select">--Select '+ val +'--</option>');
 				$select_cache.push($option_select);
 				if(key > 0) {
-					//$option_select.attr('disabled', true);
+					$option_select.attr('disabled', true);
 				}
 			});
 			makeCouchRequest(js_config['base_path']+"db/options-object", function(data){
@@ -215,7 +216,7 @@ function template_get_shipping(runsize, color, tat) {
 
 	makeCouchRequest(js_config['base_path']+"db/price", function(data){
 		//var data = jQuery.parseJSON(data_price);
-		console.log(data);
+		// console.log(data);
 		shipping = data['rows'][0]['value'][tat]['defaultShipping'];
 		render_shipping_table(shipping);
 		
@@ -225,7 +226,7 @@ function template_get_shipping(runsize, color, tat) {
 
 function render_shipping_table(shipping_obj) {
 	shipping = shipping_obj;
-	console.log(shipping);
+	// console.log(shipping);
 	$shipping_wrap.html('<h2>Shipping Table</h2><table class="shipping-table"></table>');
 
 	var $shipping_table = $shipping_wrap.find('table.shipping-table');
@@ -286,17 +287,22 @@ function render_base_price(subtotal) {
 }
 
 function ui_action_option_construct($select_cache, options_object, start_key, runsize, color, tat) {
+	console.log(options_object);
 	$.each($select_cache, function(key, val) {
 		if(key == start_key) {
 			$.each(options_object, function(option_label, option_tree) {
 				var i = 0;
+				// console.log(option_tree);
 				$select_cache[key].empty();
 				$select_cache[key].data('label', option_label);
+				$select_cache[key].data('obj', option_tree);
 				$select_cache[key].append('<option value="select">--Select '+ option_label +'--</option>');
 				$.each(option_tree, function(option_key, option_val) {
+					// console.log(option_key);
 					$select_cache[key].append('<option class="primary-opt" value="'+i+'" id="primary-opt-'+i+'">'+option_key+'</option>');
 					//if(option_val.options) {
 						$select_cache[key].find("option#primary-opt-"+i).data('optionSubTree', option_val);
+						// console.log(option_val);
 					//}
 					i++;
 				});
@@ -304,9 +310,13 @@ function ui_action_option_construct($select_cache, options_object, start_key, ru
 
 			this.change(function() {
 				var selected = $(this).find(':selected');
+				
 				if(selected.val() == 'select') {
+					var prev_select_obj = $(this).prev().prev().find(':selected').data('optionSubTree');
 					if(start_key > 0) {
-
+						// console.log(my_var);
+						// console.log(prev_select_obj['base_price']);
+						render_base_price(prev_select_obj['base_price']);
 					} else {
 						template_get_base_price(runsize, color, tat);
 					}
@@ -319,8 +329,8 @@ function ui_action_option_construct($select_cache, options_object, start_key, ru
 						}
 					});
 				} else {
+					// console.log($(this));
 					var sub_options = $(this).find(':selected').data('optionSubTree');
-					// console.log(sub_options);
 					shipping_obj = sub_options['defaultShipping'];
 					render_base_price(sub_options.base_price);
 					render_shipping_table(shipping_obj);
