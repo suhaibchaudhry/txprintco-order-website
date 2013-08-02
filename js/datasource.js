@@ -39,29 +39,6 @@ $(document).ready(function() {
 	});
 });
 
-function makeCouchRequest(url, callback, data) {
-	var options = {
-		url: url,
-		//dataType: 'application/json',
-		type: "GET",
-		//contentType: "json",
-		success: function(data) {
-			// console.log(data);
-			callback(jQuery.parseJSON(data));
-		},
-		error: function(xhr,status,error) {
-			//alert(xhr);
-			console.log(error);
-		}
-	};
-
-	if(data) {
-		options['data'] = data;
-	}
-
-	$.ajax(options);
-}
-
 function template_get_colors(runsize) {
 	var  colors, count;
 
@@ -253,6 +230,46 @@ function render_shipping_table(shipping_obj) {
 
 */
 
+function makeCouchRequest(url, callback, data) {
+	var options = {
+		url: url,
+		//dataType: 'application/json',
+		type: "GET",
+		//contentType: "json",
+		success: function(data) {
+			// console.log(data);
+			callback(jQuery.parseJSON(data));
+		},
+		error: function(xhr,status,error) {
+			//alert(xhr);
+			console.log(error);
+		}
+	};
+
+	if(data) {
+		options['data'] = data;
+	}
+
+	$.ajax(options);
+}
+
+function makePHPRequest(request, callback, key) {
+	var options = {
+		url: "../includes/price.php",
+		data: "request="+ request +"&key="+ key,
+		type: "POST",
+		success: function(data) {
+			callback(jQuery.parseJSON(data));
+		},
+		error: function(xhr, status, error) {
+			console.log(xhr.responseText);
+			console.log(error);
+		}
+	};
+
+	$.ajax(options);
+}
+
 function template_get_base_price(runsize, color, tat) {
 	// Get the base price for the run size
 	makeCouchRequest(js_config['base_path']+"db/price", function(data){
@@ -276,9 +293,16 @@ function template_get_base_price(runsize, color, tat) {
 }
 
 function get_best_price(runsize, color) {
+	console.log("makePHPRequest function was executed.");
 	makeCouchRequest(js_config['base_path']+"db/best_price", function(data) {
 		render_base_price(data['rows'][0]['value']);
   	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'});
+
+  	/* PHP function call to get the price for a given key. */
+  	makePHPRequest('best_price', function(data) {
+  		console.log(data);
+  	},'["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]');
+
 }
 
 function render_base_price(subtotal) {
