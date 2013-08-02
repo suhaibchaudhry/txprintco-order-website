@@ -180,13 +180,13 @@ function template_get_options(runsize, color, tat) {
 			makeCouchRequest(js_config['base_path']+"db/options-object", function(data){
 				options_object = data['rows'][0]['value'][tat];
 				ui_action_option_construct($select_cache, options_object, 0, runsize, color, tat);
-			}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
+			}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'}, true);
 		}
 		else
 		{
 			$options_wrap.html('<h2>No Options.</h2>');
 		}
-	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
+	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'}, true);
 }
 
 function template_get_shipping(runsize, color, tat) {
@@ -230,7 +230,7 @@ function render_shipping_table(shipping_obj) {
 
 */
 
-function makeCouchRequest(url, callback, data) {
+function makeCouchRequest(url, callback, data, middleware) {
 	var options = {
 		url: url,
 		//dataType: 'application/json',
@@ -246,13 +246,24 @@ function makeCouchRequest(url, callback, data) {
 		}
 	};
 
-	if(data) {
-		options['data'] = data;
+	if(middleware) {
+		if(data) {
+			options['data'] = data;
+		} else {
+			options['data'] = {};
+		}
+		options['data']['url'] = url;
+		options['url'] = 'gateway.php';
+	} else {
+		if(data) {
+			options['data'] = data;
+		}
 	}
 
 	$.ajax(options);
 }
 
+/*
 function makePHPRequest(request, callback, key) {
 	var options = {
 		url: "../includes/price.php",
@@ -269,10 +280,11 @@ function makePHPRequest(request, callback, key) {
 
 	$.ajax(options);
 }
+*/
 
 function template_get_base_price(runsize, color, tat) {
 	// Get the base price for the run size
-	makeCouchRequest(js_config['base_path']+"db/price", function(data){
+	makeCouchRequest(js_config['base_path']+"db/price", function(data) {
 		//var data = jQuery.parseJSON(data_price);
 		// console.log(data);
 		price = data['rows'][0]['value'];
@@ -289,21 +301,22 @@ function template_get_base_price(runsize, color, tat) {
 				render_base_price(price[key].base_price);
 			}
 		});
-	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
+	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'}, true);
 }
 
 function get_best_price(runsize, color) {
 	console.log("makePHPRequest function was executed.");
 	makeCouchRequest(js_config['base_path']+"db/best_price", function(data) {
 		render_base_price(data['rows'][0]['value']);
-  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'});
+  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'}, true);
 
   	/* PHP function call to get the price for a given key. */
+  	/*
   	makePHPRequest('best_price', function(data) {
   		console.log(data);
   		render_markedup_base_price(data['rows'][0]['value']);
   	},'["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]');
-
+	*/
 }
 
 function render_base_price(subtotal) {
