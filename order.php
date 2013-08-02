@@ -10,11 +10,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
-	<link href="css/vader/jquery-ui-1.10.3.custom.css" rel="stylesheet">
-	<link href="styles.css" rel="stylesheet">
+	<link href="/css/styles.css" rel="stylesheet">
 	<script src="js/jquery-1.9.1.js"></script>
-	<script src="js/jquery-ui-1.10.3.custom.js"></script>
-	<script src="js/components.js"></script>
 	<script src="js/datasource.js"></script>
 	<script type="text/javascript">
 	<!--//--><![CDATA[//><!--

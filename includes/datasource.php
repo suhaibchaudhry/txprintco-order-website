@@ -16,6 +16,7 @@ function makeCouchRequest($request, $json_output = FALSE, $reqData = NULL) {
 	global $config;
 
 	$url = "http://".$config['couchdb']['user'].":".$config['couchdb']['pass'].'@'.$config['couchdb']['host'].":".$config['couchdb']['port']."/".$config['couchdb']['database'].$request;
+	// debug($url);
 	if(!is_null($reqData)) {
 		$url .= '?'.http_build_query($reqData);
 	}
