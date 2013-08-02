@@ -301,6 +301,7 @@ function get_best_price(runsize, color) {
   	/* PHP function call to get the price for a given key. */
   	makePHPRequest('best_price', function(data) {
   		console.log(data);
+  		render_markedup_base_price(data['rows'][0]['value']);
   	},'["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]');
 
 }
@@ -308,6 +309,11 @@ function get_best_price(runsize, color) {
 function render_base_price(subtotal) {
 	$product_datails.find('.product-base-price span.price-title').html('Subtotal');
 	$product_datails.find('.product-base-price span.base-price').html(subtotal);
+}
+
+function render_markedup_base_price(subtotal) {
+	$product_datails.find('.new-product-base-price span.new-price-title').html('Markedup Subtotal');
+	$product_datails.find('.new-product-base-price span.new-base-price').html(subtotal);
 }
 
 function ui_action_option_construct($select_cache, options_object, start_key, runsize, color, tat) {
@@ -373,6 +379,10 @@ function template_reset_base_price() {
 	var $base_price = $product_datails.find('.product-base-price');
 	$base_price.find('span.price-title').html($base_price.data('price-title'));
 	$base_price.find('span.base-price').html($base_price.data('base-price'));
+
+	var $markedup_base_price = $product_datails.find('.new-product-base-price');
+	$markedup_base_price.find('span.new-price-title').html($markedup_base_price.data('new-price-title'));
+	$markedup_base_price.find('span.new-base-price').html($markedup_base_price.data('new-base-price'));
 }
 
 function reset_shipping_table(){
