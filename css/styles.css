@@ -102,3 +102,7 @@ select
 	-webkit-box-shadow: inset 0px 0px 1px 1px #D1D1D1;
     box-shadow: inset 0px 0px 1px 1px #D1D1D1;
 }
+
+.edit-rules {
+	margin-bottom: 5px;
+}

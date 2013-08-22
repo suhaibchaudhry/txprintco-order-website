@@ -21,11 +21,13 @@
 <body>
 	<div id="content">
 		<div class="side-bar">
+		<input type="submit" value="Edit Sidebar" class="edit-rules">
 			<?php print template_sidebar(); ?>
 		</div>
 		<div class="products">
 			<ul class="menu">
-				<?php /*print template_products()*/ ?> 
+				<?php /*print template_products()*/ ?>
+				<!-- <input type="submit" value="Edit Subcat" class="edit-rules"> -->
 				<?php print template_products_with_subcat() ?>
 			</ul>
 			

@@ -7,8 +7,8 @@
 
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
+<head
+>	<meta charset="UTF-8">
 	<title>Document</title>
 	<link href="/css/styles.css" rel="stylesheet">
 	<script src="js/jquery-1.9.1.js"></script>
@@ -24,9 +24,11 @@
 <body>
 	<div id="content">
 		<div class="side-bar">
+			<input type="submit" value="Edit Sidebar" class="edit-rules">
 			<?php print template_sidebar(); ?>
 		</div>
 		<div class="product-form">
+			<!-- <input type="submit" value="Edit Product" class="edit-rules"> -->
 			<?php print template_product_details() ?>
 		</div>
 	</div>
