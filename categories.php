@@ -11,6 +11,7 @@
 	<link href="/css/styles.css" rel="stylesheet">
 	<script src="js/jquery-1.9.1.js"></script>
 	<script src="js/datasource.js"></script>
+    <script src="js/sidebar_rules.js"></script>
 	<script type="text/javascript">
 	<!--//--><![CDATA[//><!--
 	js_config = {};
@@ -21,7 +22,7 @@
 <body>
 	<div id="content">
 		<div class="side-bar">
-		<input type="submit" value="Edit Sidebar" class="edit-rules">
+		<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">
 			<?php print template_sidebar(); ?>
 		</div>
 		<div class="products">

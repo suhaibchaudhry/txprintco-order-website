@@ -4,7 +4,7 @@
 }
 body{
 	font: 62.5% "Trebuchet MS", sans-serif;
-	margin: 50px;
+	margin: 10px;
 }
 .demoHeaders {
 	margin-top: 2em;
@@ -40,9 +40,13 @@ body{
 .fakewindowcontain .ui-widget-overlay {
 	position: absolute;
 }
-.ui-menu { 
-	width: 150px;
-	/*margin-bottom: 10px; */
+#menu li { 
+	//width: 150px;
+	padding-bottom: 5px;
+}
+
+#menu li a{
+	margin-right: 10px;
 }
 
 .content
@@ -54,7 +58,7 @@ body{
 .side-bar
 {
 	float: left;
-	width: 150px;
+	width: 350px;
 	margin-right: 10px;
 }
 

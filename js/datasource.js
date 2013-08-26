@@ -96,7 +96,7 @@ function template_get_tat(runsize, color) {
 
   // makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/tat", function(data){ // For Apache
 	makeCouchRequest(js_config['base_path']+"db/tat", function(data){
-
+	console.log(data);
 	tat = data['rows'][0]['value'];
 	$tat_wrap.html('<h2>Select a turn around time</h2><select class="tat"></select>');
 	$options_wrap.empty();
