@@ -13,7 +13,7 @@
 	<link href="/css/styles.css" rel="stylesheet">
 	<script src="js/jquery-1.9.1.js"></script>
 	<script src="js/datasource.js"></script>
-    <script src="js/sidebar_rules.js"></script>
+    <script src="js/rules.js"></script>
 	<script type="text/javascript">
 	<!--//--><![CDATA[//><!--
 	js_config = {};

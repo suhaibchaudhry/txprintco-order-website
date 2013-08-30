@@ -2,7 +2,6 @@
 require_once 'includes/datasource.php';
 header("Content-Type: text/html");
 define("MARKUP", 1.5);
-
 $orig_url = $_GET['url'];
 $url = $_GET['url'];
 $url = str_replace('/db', '/_design/txprintco/_view', $url);
@@ -47,6 +46,10 @@ if($orig_url == '/db/best_price') {
 		$tat->base_price = apply_factor(MARKUP, $tat->base_price);
 	}
 	print json_encode($products);
+} else if(isset($_GET['rule_type']) && isset($_GET['doc'])) {
+	$rule_type = $_GET['rule_type'];
+	$doc       = $_GET['doc'];
+	makeCouchPutRuleRequest($rule_type, $doc);
 } else {
 	$products = makeCouchRequest($url, true, $_GET);
 	print $products;
