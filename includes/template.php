@@ -4,7 +4,7 @@ require_once 'datasource.php';
 function template_sidebar() {
 	$content = '';
 	$categories = makeCouchRequest('/_design/txprintco/_view/categories?group=true');
-
+    $content .= '<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">';
 	foreach ($categories->rows as $row) {
 		$content .= "<li><a href=".base_path()."categories.php?product_cat=".urlencode($row->key).">".$row->key."</a></li>";
 	}
@@ -48,7 +48,7 @@ function template_products_with_subcat()
 			//debug($index);
 			//debug($product);
 			if($index == 0) {
-				$content .= '<h2>'.$product->subcat.'</h2>';
+				$content .= '<div class="products-subcat-title"><h2>'.$product->subcat.'</h2></div>';
 			}
 			$content .= '<div class="product-item">';
 			$content .= '<div class="title"><a href="'.base_path().'order.php?product_id='.$product->product_id.'">'.$product->title.'</a></div>';
@@ -78,7 +78,7 @@ function template_product_details()
 	$content .= '<div class="product-title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
 	//$content .= '<div class="product-base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
 	$content .= '<div class="product-base-price" data-price-title="Base Price" data-base-price="$0.00"><h3><span class="price-title">Base Price</span>: <span class="base-price">$0.00</span></h3></div>';
-	// $content .= '<div class="new-product-base-price" data-new-price-title="Markedup Base Price" data-new-base-price="$0.00"><h3><span class="new-price-title">Markedup Base Price</span>: <span class="new-base-price">$0.00</span></h3></div>';
+	$content .= '<div class="original-product-base-price" data-original-price-title="Orignal Base Price" data-original-base-price="$0.00"><h3><span class="original-price-title">Original Base Price</span>: <span class="original-base-price">$0.00</span></h3></div>';
 	$content .= '<h2>Select a runsize:</h2>';
 	
 	$content .= '<div class="runsizes-wrap">';

@@ -2,6 +2,7 @@
 	require_once 'includes/template.php';
 	require_once 'includes/datasource.php';
 	$js_config['base_path'] = base_path();
+    $js_config['product_cat'] = $_GET['product_cat'];
 ?>
 <!doctype html>
 <html lang="en">
@@ -22,7 +23,6 @@
 <body>
 	<div id="content">
 		<div class="side-bar">
-			<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">
 			<?php print template_sidebar(); ?>
 		</div>
 		<div class="products">

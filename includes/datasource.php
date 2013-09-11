@@ -36,77 +36,129 @@ function makeCouchRequest($request, $json_output = FALSE, $reqData = NULL) {
 	return $data;
 }
 
-function makeCouchRuleRequest($type, $request) {
-	try
-	{
-		$sag = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
-		$sag->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
-		$sag->setDatabase($config['couchruledb']['database']);
+function makeCouchRuleRequest($id) {
+	global $config;
+    try {
+		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
+		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
+		$rules_db->setDatabase($config['couchruledb']['database']);
+        
+        $products_db = new Sag($config['couchdb']['host'], $config['couchdb']['port']);
+		$products_db->login($config['couchdb']['user'], $config['couchdb']['pass']);
+		$products_db->setDatabase($config['couchdb']['database']);
 	}
-	catch (SagCouchException $ex )
-	{
-		// print $ex->getMessage();
-		// print $ex->getCode();
+	catch (SagCouchException $ex ) {
+		 print $ex->getMessage();
+		 print $ex->getCode();
+	}
+    
+    try { // Get the product/doc
+        $encoded_id = urlencode('"'.$id.'"');
+        $doc = $products_db->get('_design/txprintco/_view/products_details?key=' .$encoded_id)->body->rows[0]->value;
+        
+        $product_parent_cat = $doc->parent_cat->title;
+        $product_subcat = $doc->subcat;
+	}
+	catch (SagCouchException $ex ) {
+		 //print $ex->getMessage();
+		 //print $ex->getCode();
+	}
+    
+    try { // Check if the product has any rules in the rules_db
+        $product_query = $rules_db->get($id);
+	}
+	catch (SagCouchException $ex ) {
+		 //print $ex->getMessage();
+		 //print $ex->getCode();
+	}
+    
+    try { // Check if the products subcat has any rules in the database
+        $product_subcat_query = $rules_db->get($id);
+	}
+	catch (SagCouchException $ex ) {
+		 //print $ex->getMessage();
+		 //print $ex->getCode();
+	}
+    
+    try { // Check if the products parent cat has any rules in the database
+        $product_parent_cat_query = $rules_db->get(md5($product_parent_cat));
+        return $product_parent_cat_query->body->markup;
+	}
+	catch (SagCouchException $ex ) { // return false here because there are no rules for the product in the rules database
+		 //print $ex->getMessage();
+		 //print $ex->getCode();
+         return false;
 	}
 }
 
 function makeCouchPutRuleRequest($type, $object) {
 	global $config;
 	
-	try
-	{
+	try {
 		$sag = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
 		$sag->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
 		$sag->setDatabase($config['couchruledb']['database']);
 	} 
-	catch (SagCouchException $ex) 
-	{
+	catch (SagCouchException $ex) {
 		// print $ex->getMessage();
 		// print $ex->getCode();
 	}
 	
-	if($type == 'category')
-	{
+	if($type == 'category') {
 		// print $type;
 		$doc = json_decode($object);
 		$id = md5($doc->title);
-		 try
-		{
+		try {
 		    $doc_check = $sag->get($id)->body;
 		    $doc_rev = $doc_check->_rev;
 			$doc->_rev = $doc_rev;
-			try
-			{
-				$sag->put($id, json_encode($doc));
-			}
-			catch(Exception $e)
-			{
-				print $e->getMessage();
-				print $e->getCode();
-			}
+            $sag->put($id, json_encode($doc));
 		}
-		catch(Exception $e)
-		{
+		catch(Exception $e) {
 			// 404 - document does not exist
 			// 409 - document conflict	
-			print $e->getMessage();
-			print $e->getCode();
+			//print $e->getMessage();
+			//print $e->getCode();
 			if($e->getCode() == 404)
 				$sag->put($id, json_encode($doc));
 		}
 	}
-	else if($type == 'subcat')
-	{
-		
+	else if($type == 'subcat') {
+		$doc = json_decode($object);
+        $id = md5($doc->_id);
+        try {
+            $doc_check = $sag->get($id)->body;
+            $doc_rev = $doc_check->_rev;
+            $doc->_rev = $doc_rev;
+            $sag->put($id, json_encode($doc));
+        } catch (Exception $e) {
+            if($e->getcode() == 404)
+                $sag->put($id, json_encode($doc));
+        }
 	}
-	else if($type == 'product')
-	{
+	else if($type == 'product') {
 		
 	}
 }
 
-function get_products($product_cat)
-{
+function getMarkup($id) {
+    global $config;
+    try {
+		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
+		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
+		$rules_db->setDatabase($config['couchruledb']['database']);
+        
+        $markup_for_product = $rules_db->get($id)->body->markup;
+        return $markup_for_product;
+	}
+	catch (SagCouchException $ex ) {
+		 //print $ex->getMessage();
+		 //print $ex->getCode();
+         return false;
+	}
+}
+
+function get_products($product_cat) {
 	$products = makeCouchRequest("/_design/txprintco/_view/products");
 	debug($products);
 }

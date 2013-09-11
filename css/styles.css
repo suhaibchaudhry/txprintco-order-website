@@ -110,3 +110,12 @@ select
 .edit-rules {
 	margin-bottom: 5px;
 }
+
+.products-subcat-title {
+    display: inline-block;
+}
+
+.products-subcat-title h2 {
+    float: left;
+    margin-right: 5px;
+}

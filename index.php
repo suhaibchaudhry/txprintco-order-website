@@ -11,7 +11,6 @@
 <body>
 	<div id="content">
 		<div class="side-bar">
-			<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">
 			<?php print template_sidebar(); ?>
 		</div>
 	</div>
