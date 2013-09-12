@@ -2,14 +2,20 @@
 require_once 'includes/datasource.php';
 header("Content-Type: text/html");
 define("MARKUP", 1.5);
-$orig_url = $_GET['url'];
-$url = $_GET['url'];
-$url = str_replace('/db', '/_design/txprintco/_view', $url);
-//var_dump($orig_url);
 
-$key = $_GET['key'];
-$key_clean = str_replace(str_split('[]" ') ,'' , $key);
-$key_array = explode(',', $key_clean);
+$orig_url = '';
+if(isset($_GET['url'])) {
+	$orig_url = $_GET['url'];
+	$url = $_GET['url'];
+	$url = str_replace('/db', '/_design/txprintco/_view', $url);
+	//var_dump($orig_url);
+}
+
+if(isset($_GET['key'])) {
+	$key = $_GET['key'];
+	$key_clean = str_replace(str_split('[]" ') ,'' , $key);
+	$key_array = explode(',', $key_clean);
+}
 
 function apply_factor($markup_factor, $base_price) {
 	return '$'.number_format(((float)preg_replace("/[^0-9.]/", "", $base_price))*$markup_factor, 2);

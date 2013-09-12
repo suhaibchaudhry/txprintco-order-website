@@ -12,6 +12,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+error_reporting(0);
 
 require_once('SagException.php');
 require_once('SagCouchException.php');
