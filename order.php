@@ -1,8 +1,20 @@
-<?php 
+<?php
+	// session_start();
+	require_once 'includes/user_management.php';
 	require_once 'includes/template.php';
 	require_once 'includes/datasource.php';
 	$js_config['base_path'] = base_path();
 	$js_config['product_id'] = $_GET['product_id'];
+	// var_dump(check_user());
+    if(check_user() == 'admin')
+    {
+        $js_config['admin'] = true;
+    }
+    else
+    {
+        $js_config['admin'] = false;
+    }
+
 ?>
 
 <!doctype html>
@@ -13,7 +25,7 @@
 	<link href="/css/styles.css" rel="stylesheet">
 	<script src="js/jquery-1.9.1.js"></script>
 	<script src="js/datasource.js"></script>
-    <script src="js/rules.js"></script>
+    <?php if(check_user() == 'admin') echo '<script src="js/rules.js"></script>' ?>
 	<script type="text/javascript">
 	<!--//--><![CDATA[//><!--
 	js_config = {};

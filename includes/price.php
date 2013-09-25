@@ -1,5 +1,5 @@
-<?php 
-	/* 
+<?php
+	/*
 	   This php script is called from datasource.js. The data is passed into this
 	   script via request and key parameters as POST varialbes.
 	*/
@@ -16,9 +16,9 @@ if(isset($_POST['request']) & isset($_POST['key']))
 		$price_object = makeCouchRequest('/_design/txprintco/_view/'.$request. '?key='.$key);
 		$priceInCents = convertPriceToCents($price_object);
 		$markedUpPrice = priceMarkup($markup, $priceInCents);
-		echo json_encode($markedUpPrice);	
+		echo json_encode($markedUpPrice);
 	}
-	
+
 }
 
 function convertPriceToCents($amount) {
@@ -35,7 +35,7 @@ function convertPriceToCents($amount) {
 		$decimalPart =  $price - intval($price);
 		// echo "Integer: " .$intPart. "\n";
 		// echo "Fraction: " .$decimalPart. "\n";
-		
+
 		$decimalValue = ($intPart * 100) + ($decimalPart * 100);
 		// echo "Value in cents: " .$decimalValue. "\n";
 		// echo json_encode($amount);
@@ -45,7 +45,7 @@ function convertPriceToCents($amount) {
 		// echo "Value in array after: " .$amount->rows[0]->value. "\n";
 		return $amount;
 	}
-	
+
 
 }
 

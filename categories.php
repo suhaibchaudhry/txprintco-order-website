@@ -1,8 +1,16 @@
 <?php
+	// session_start();
+	// echo session_id();
+	// echo '<pre>';
+	// var_dump($_SESSION);
+	// echo '</pre>';
+	require_once 'includes/user_management.php';
 	require_once 'includes/template.php';
 	require_once 'includes/datasource.php';
+	// var_dump(check_user());
 	$js_config['base_path'] = base_path();
-    $js_config['product_cat'] = $_GET['product_cat'];
+  $js_config['product_cat'] = $_GET['product_cat'];
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -27,12 +35,9 @@
 		</div>
 		<div class="products">
 			<ul class="menu">
-				<?php /*print template_products()*/ ?>
-				<!-- <input type="submit" value="Edit Subcat" class="edit-rules"> -->
-				<input type="submit" value="Edit Subcat" id="edit-subcat-rules" class="edit-rules">
 				<?php print template_products_with_subcat() ?>
 			</ul>
-			
+
 		</div>
 	</div>
 </body>

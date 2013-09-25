@@ -2,7 +2,6 @@
 require_once 'includes/datasource.php';
 header("Content-Type: text/html");
 define("MARKUP", 1.5);
-
 $orig_url = '';
 if(isset($_GET['url'])) {
 	$orig_url = $_GET['url'];
@@ -30,13 +29,14 @@ function recursive_apply_markup(&$products) {
 		} else {
 			return;
 		}
-	}	
+	}
 }
 
 if($orig_url == '/db/best_price') {
     $rule_markup = makeCouchRuleRequest($key_array[0]);
+    //echo $rule_markup;
     if($rule_markup) {
-        $products = makeCouchRequest($url, false, $_GET);
+      $products = makeCouchRequest($url, false, $_GET);
 	    $products->rows[0]->value = apply_factor((($rule_markup + 100) / 100), $products->rows[0]->value);
 	    print json_encode($products);
     } else {
@@ -49,6 +49,9 @@ if($orig_url == '/db/best_price') {
 	recursive_apply_markup($products->rows[0]->value);
 	print json_encode($products);
 } else if($orig_url == '/db/price') {
+    $rule_markup = makeCouchRuleRequest($key_array[0]);
+    //echo $key_array[0];
+    echo $rule_markup;
 	$products = makeCouchRequest($url, false, $_GET);
 	foreach($products->rows[0]->value as $tat) {
 		$tat->base_price = apply_factor(MARKUP, $tat->base_price);

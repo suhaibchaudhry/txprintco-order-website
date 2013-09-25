@@ -1,36 +1,18 @@
 <?php
+require_once 'user_management.php';
 require_once 'datasource.php';
+
 
 function template_sidebar() {
 	$content = '';
 	$categories = makeCouchRequest('/_design/txprintco/_view/categories?group=true');
-    $content .= '<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">';
+    if(check_user() == 'admin') $content .= '<input type="submit" value="Edit Sidebar" id="edit-sidebar-rules" class="edit-rules">';
 	foreach ($categories->rows as $row) {
 		$content .= "<li><a href=".base_path()."categories.php?product_cat=".urlencode($row->key).">".$row->key."</a></li>";
 	}
 
 	return '<ul id="menu">'.$content.'</ul>';
 }
-
-// function template_products()
-// {
-// 	$category = $_GET['product_cat'];
-// 	// $url = '/_design/txprintco/_view/products?key="'. $category .'"';
-// 	$products = makeCouchRequest('/_design/txprintco/_view/products?key="'. urlencode($category) .'"');
-// 	debug($products);
-// 	$content = '<div class="category-product-grid">';
-
-// 	foreach($products->rows as $product_id => $product) {
-// 		$content .= '<div class="product-item">';
-// 		$content .= '<div class="title"><a href="'.base_path().'order.php?product_id='.$product->value->product_id.'">'.$product->value->title.'</a></div>';
-// 		$content .= '<div class="base-price">'.$product->value->base_price.'</div>';
-// 		$content .= '</div>';
-// 	}
-
-// 	$content .= '</div>';
-
-// 	return $content;
-// }
 
 function template_products_with_subcat()
 {
@@ -40,6 +22,7 @@ function template_products_with_subcat()
 	//debug($products_with_subcat);
 
 	$content = '';
+    if(check_user() == 'admin') $content .= '<input type="submit" value="Edit Subcat" id="edit-subcat-rules" class="edit-rules">';
 	foreach(groupProducts($products_with_subcat) as $row_key => $group) {
 		//$i = 0;
 		//debug($group);
@@ -78,7 +61,7 @@ function template_product_details()
 	$content .= '<div class="product-title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
 	//$content .= '<div class="product-base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
 	$content .= '<div class="product-base-price" data-price-title="Base Price" data-base-price="$0.00"><h3><span class="price-title">Base Price</span>: <span class="base-price">$0.00</span></h3></div>';
-	$content .= '<div class="original-product-base-price" data-original-price-title="Orignal Base Price" data-original-base-price="$0.00"><h3><span class="original-price-title">Original Base Price</span>: <span class="original-base-price">$0.00</span></h3></div>';
+	if(check_user() == 'admin')$content .= '<div class="original-product-base-price" data-original-price-title="Orignal Base Price" data-original-base-price="$0.00"><h3><span class="original-price-title">Original Base Price</span>: <span class="original-base-price">$0.00</span></h3></div>';
 	$content .= '<h2>Select a runsize:</h2>';
 	
 	$content .= '<div class="runsizes-wrap">';

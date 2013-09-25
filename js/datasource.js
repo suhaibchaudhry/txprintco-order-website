@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 	//Cache JQuery Objects
 	$product_datails = $('div.product-details');
 	$runsizes_wrap = $('div.runsizes-wrap');
@@ -11,9 +11,7 @@ $(document).ready(function() {
 
 	//Cache variables
 	var selected_runsize = '';
-	// var selected_color = '';
-	// var selected_tat = '';
-	
+
 
 	$('div.runsizes-wrap select.runsizes').change(function(){
 		selected_runsize = $(this).val();
@@ -28,29 +26,29 @@ $(document).ready(function() {
 		}
 		else
 		{
-			// selected_runsize = $(this).val();
-			//console.log($tat_wrap.is(':empty'));
-			// $tat_wrap.hide(); // Hide the tat_wrap if a previous one existed.
 			template_reset_base_price();
 			reset_shipping_table();
 			template_get_colors(selected_runsize);
 			$options_wrap.empty();
-		}	
+		}
 	});
 });
 
 function template_get_colors(runsize) {
 	var  colors, count;
+	var mycount = 0;
+	mycount++;
+	console.log(mycount);
 
 	//makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/colors", function(data){ // For Apache
-		makeCouchRequest(js_config['base_path']+"db/colors", function(data){ 
+		makeCouchRequest(js_config['base_path']+"db/colors", function(data){
 		// Add a heading and append a drop down to the form
 		//var data = jQuery.parseJSON(json_data);
 		//console.log(data);
 		colors = data['rows'][0]['value'];
 		$colors_wrap.html('<h2>Select a color</h2><select class="colors"></select>');
 		$tat_wrap.empty();
-		
+
 		var last_key = '';
 		var last_val = '';
 
@@ -70,20 +68,22 @@ function template_get_colors(runsize) {
 			selected_color = $(this).val();
 			if(selected_color == 'select')
 			{
-				$tat_wrap.empty();
+			    $tat_wrap.empty();
+			    $options_wrap.empty();
 				template_reset_base_price();
 				reset_shipping_table();
 			}
 			else
 			{
 				get_best_price(runsize, selected_color, false);
-				get_best_price(runsize, selected_color, true);
+				if (js_config['admin'])
+				    get_best_price(runsize, selected_color, true);
 				reset_shipping_table();
-				template_get_tat(runsize, selected_color);	
+				template_get_tat(runsize, selected_color);
 			}
-			
+
 		});
-		
+
 		if(count < 2) {
 			$color_select.hide();
 			template_get_tat(runsize, last_key);
@@ -94,20 +94,17 @@ function template_get_colors(runsize) {
 }
 
 function template_get_tat(runsize, color) {
-
-  // makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/tat", function(data){ // For Apache
 	makeCouchRequest(js_config['base_path']+"db/tat", function(data){
-	console.log(data);
 	tat = data['rows'][0]['value'];
 	$tat_wrap.html('<h2>Select a turn around time</h2><select class="tat"></select>');
 	$options_wrap.empty();
-	
+
 	var last_ket = '';
 	var last_value = '';
-	
+
 	var $tat_select = $tat_wrap.find('select.tat');
 	$tat_select.append('<option value="select">--Select Turn Around Time--</option>');
-	
+
 	count = 0;
 	$.each(tat, function(key, val){
 		$tat_select.append('<option value="' + key + '">' + val + '</option>');
@@ -115,7 +112,7 @@ function template_get_tat(runsize, color) {
 		last_val = val;
 		count++;
 	});
-	
+
 	// Add a event handler on tat
 	$tat_select.change(function() {
 		var selected_tat = $(this).val();
@@ -127,21 +124,23 @@ function template_get_tat(runsize, color) {
 		var first_child = $tat_select.find('option:first-child').val();
 		if(first_child == selected_tat) // First option on tat, if selected reset shipping table and get the best price
 		{
+			// console.log('this ran');
 			$options_wrap.empty();
 			get_best_price($runsize.val(), color);
+			if (js_config['admin']) {
+			    get_best_price($runsize.val(), color, true);
+			}
 			reset_shipping_table();
 		}
 		else // Any other option on tat, get the base price and populate shipping table
 		{
-			// template_get_base_price($runsize.val(), $color.val(), $(this).val());
-			// template_get_shipping($runsize.val(), $color.val(), $(this).val());
-		    template_get_base_price($runsize.val(), color, selected_tat, false);
-		    template_get_base_price($runsize.val(), color, selected_tat, true);
+	    template_get_base_price($runsize.val(), color, selected_tat, false);
+	     template_get_base_price($runsize.val(), color, selected_tat, true);
 			template_get_shipping($runsize.val(), color, selected_tat);
 			template_get_options($runsize.val(), color, selected_tat);
 		}
 	});
-	
+
 	// If there's onyl one tat option then the following will execute
 	if( count < 2){
 
@@ -150,7 +149,7 @@ function template_get_tat(runsize, color) {
 		one_option_value = $tat_wrap.find('select.tat option:nth-child(2)').val();
 		$
 		template_get_base_price(runsize, color, one_option_value, false);
-		template_get_base_price(runsize, color, one_option_value, true);
+		 template_get_base_price(runsize, color, one_option_value, true);
 		template_get_shipping(runsize, color, one_option_value);
 		template_get_options(runsize, color, one_option_value)
 	}
@@ -165,7 +164,7 @@ function template_get_options(runsize, color, tat) {
 	$options_wrap.empty();
 	makeCouchRequest(js_config['base_path']+"db/options", function(data){
 		options = data['rows'][0]['value']['options'];
-		// If the options array if not empty poplate the options-wrap
+		// If the options array is not empty poplate the options-wrap
 		if(options)
 		{
 			$.each(options, function(key, val){
@@ -196,8 +195,6 @@ function template_get_shipping(runsize, color, tat) {
 		// console.log(data);
 		shipping = data['rows'][0]['value'][tat]['defaultShipping'];
 		render_shipping_table(shipping);
-		
-		
 	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '","' + tat  +'"]'});
 }
 
@@ -213,7 +210,7 @@ function render_shipping_table(shipping_obj) {
 	$.each(shipping, function(key, val){
 		if(key == 'originEnglish')
 		{
-			$shipping_table.append('<tr><td><h3>This product will be shipped from: '+ val +'</h3></td></tr>');		
+			$shipping_table.append('<tr><td><h3>This product will be shipped from: '+ val +'</h3></td></tr>');
 		}
 	});
 	$.each(shipping, function(key, val){
@@ -225,12 +222,12 @@ function render_shipping_table(shipping_obj) {
 }
 
 /*
-
-	HELPER FUNCTIONS
-
+	HELPER
+   FUNCTIONS
 */
 
 function makeCouchRequest(url, callback, data, middleware) {
+    //console.log(url);
 	var options = {
 		url: url,
 		//dataType: 'application/json',
@@ -246,7 +243,8 @@ function makeCouchRequest(url, callback, data, middleware) {
 		}
 	};
 
-	if(middleware) {
+	if (middleware) {
+	    //console.log('middleware');
 		if(data) {
 			options['data'] = data;
 		} else {
@@ -262,25 +260,6 @@ function makeCouchRequest(url, callback, data, middleware) {
 
 	$.ajax(options);
 }
-
-/*
-function makePHPRequest(request, callback, key) {
-	var options = {
-		url: "../includes/price.php",
-		data: "request="+ request +"&key="+ key,
-		type: "POST",
-		success: function(data) {
-			callback(jQuery.parseJSON(data));
-		},
-		error: function(xhr, status, error) {
-			console.log(xhr.responseText);
-			console.log(error);
-		}
-	};
-
-	$.ajax(options);
-}
-*/
 
 function template_get_base_price(runsize, color, tat, original_price) {
     if (!original_price) {
@@ -305,23 +284,23 @@ function template_get_base_price(runsize, color, tat, original_price) {
     }
 }
 
-function get_best_price(runsize, color, original_price) {
-	if(!original_price){
+function get_best_price(runsize, color, original) {
+  if (!original) {
 		makeCouchRequest(js_config['base_path']+"db/best_price", function(data) {
-			console.log('runsize: ' + runsize + ' color: ' + color + ' ' + JSON.stringify(data));
 			render_base_price(data['rows'][0]['value']);
-	  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'}, true);	
+  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'}, true);
 	} else {
 		makeCouchRequest(js_config['base_path']+"db/best_price", function(data) {
-			// render_base_price(data['rows'][0]['value']);
-		    console.log('runsize: ' + runsize + ' color: ' + color + ' ' + JSON.stringify(data));
 		    render_original_base_price(data['rows'][0]['value']);
 	  	}, {key: '["' + js_config.product_id + '"' + ',"' + runsize +'","' + color + '"]'}, false);
 	}
-	
+
 }
 
 function render_base_price(subtotal) {
+	var count = 0;
+	count++;
+	console.log(count);
 	$product_datails.find('.product-base-price span.price-title').html('Subtotal');
 	$product_datails.find('.product-base-price span.base-price').html(subtotal);
 }
@@ -332,17 +311,17 @@ function render_original_base_price(subtotal) {
 }
 
 function ui_action_option_construct($select_cache, options_object, start_key, runsize, color, tat) {
-	console.log(options_object);
+	//console.log(options_object);
 	$.each($select_cache, function(key, val) {
 		if(key == start_key) {
-			$.each(options_object, function(option_label, option_tree) {
+		    $.each(options_object, function (option_label, option_tree) {
 				var i = 0;
 				// console.log(option_tree);
 				$select_cache[key].empty();
 				$select_cache[key].data('label', option_label);
 				$select_cache[key].data('obj', option_tree);
 				$select_cache[key].append('<option value="select">--Select '+ option_label +'--</option>');
-				$.each(option_tree, function(option_key, option_val) {
+				$.each(option_tree, function (option_key, option_val) {
 					// console.log(option_key);
 					$select_cache[key].append('<option class="primary-opt" value="'+i+'" id="primary-opt-'+i+'">'+option_key+'</option>');
 					//if(option_val.options) {
@@ -355,15 +334,18 @@ function ui_action_option_construct($select_cache, options_object, start_key, ru
 
 			this.change(function() {
 				var selected = $(this).find(':selected');
-				
-				if(selected.val() == 'select') {
+
+				if (selected.val() == 'select') {
+				    //console.log($(this).prev().prev().find(':selected'));
 					var prev_select_obj = $(this).prev().prev().find(':selected').data('optionSubTree');
 					if(start_key > 0) {
 						// console.log(my_var);
 						// console.log(prev_select_obj['base_price']);
-						render_base_price(prev_select_obj['base_price']);
+					    render_base_price(prev_select_obj['base_price']);
+					    render_original_base_price(prev_select_obj['base_price']);
 					} else {
-						template_get_base_price(runsize, color, tat);
+					    template_get_base_price(runsize, color, tat);
+					    template_get_base_price(runsize, color, tat, true);
 					}
 					// template_get_base_price(runsize, color, tat);
 					$.each($select_cache, function(key, val) {
@@ -374,10 +356,12 @@ function ui_action_option_construct($select_cache, options_object, start_key, ru
 						}
 					});
 				} else {
-					// console.log($(this));
-					var sub_options = $(this).find(':selected').data('optionSubTree');
+					 //console.log($(this));
+				    var sub_options = $(this).find(':selected').data('optionSubTree');
+				    console.log(sub_options);
 					shipping_obj = sub_options['defaultShipping'];
 					render_base_price(sub_options.base_price);
+					render_original_base_price(sub_options.base_price);
 					render_shipping_table(shipping_obj);
 					if(sub_options.options) {
 						ui_action_option_construct($select_cache, sub_options.options, start_key+1, runsize, color, tat);
@@ -395,9 +379,9 @@ function template_reset_base_price() {
 	$base_price.find('span.price-title').html($base_price.data('price-title'));
 	$base_price.find('span.base-price').html($base_price.data('base-price'));
 
-	var $markedup_base_price = $product_datails.find('.new-product-base-price');
-	$markedup_base_price.find('span.new-price-title').html($markedup_base_price.data('new-price-title'));
-	$markedup_base_price.find('span.new-base-price').html($markedup_base_price.data('new-base-price'));
+	var $original_base_price = $product_datails.find('.original-product-base-price');
+	$original_base_price.find('span.original-price-title').html($original_base_price.data('original-price-title'));
+	$original_base_price.find('span.original-base-price').html($original_base_price.data('original-base-price'));
 }
 
 function reset_shipping_table(){

@@ -40,9 +40,10 @@ body{
 .fakewindowcontain .ui-widget-overlay {
 	position: absolute;
 }
-#menu li { 
-	//width: 150px;
-	padding-bottom: 5px;
+#menu li {
+	/*width: 150px;*/
+	/*height: 25px;*/
+	padding: 7px;
 }
 
 #menu li a{

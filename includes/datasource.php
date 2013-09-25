@@ -42,7 +42,7 @@ function makeCouchRuleRequest($id) {
 		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
 		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
 		$rules_db->setDatabase($config['couchruledb']['database']);
-        
+
         $products_db = new Sag($config['couchdb']['host'], $config['couchdb']['port']);
 		$products_db->login($config['couchdb']['user'], $config['couchdb']['pass']);
 		$products_db->setDatabase($config['couchdb']['database']);
@@ -51,11 +51,11 @@ function makeCouchRuleRequest($id) {
 		 print $ex->getMessage();
 		 print $ex->getCode();
 	}
-    
+
     try { // Get the product/doc
         $encoded_id = urlencode('"'.$id.'"');
         $doc = $products_db->get('_design/txprintco/_view/products_details?key=' .$encoded_id)->body->rows[0]->value;
-        
+
         $product_parent_cat = $doc->parent_cat->title;
         $product_subcat = $doc->subcat;
 	}
@@ -63,24 +63,31 @@ function makeCouchRuleRequest($id) {
 		 //print $ex->getMessage();
 		 //print $ex->getCode();
 	}
-    
-    try { // Check if the product has any rules in the rules_db
+
+    // Check if the product has any rules in the rules_db
+    try { 
         $product_query = $rules_db->get($id);
+        //var_dump($product_query);
 	}
 	catch (SagCouchException $ex ) {
 		 //print $ex->getMessage();
 		 //print $ex->getCode();
 	}
     
-    try { // Check if the products subcat has any rules in the database
-        $product_subcat_query = $rules_db->get($id);
+    // Check if the products subcat has any rules in the database
+    try {
+        $concat_parentcat_subcat = $product_parent_cat.$product_subcat;
+        //echo md5($concat_parentcat_subcat);
+        $product_subcat_query = $rules_db->get(md5($concat_parentcat_subcat));
+        return $product_subcat_query->body->markup;
 	}
 	catch (SagCouchException $ex ) {
 		 //print $ex->getMessage();
 		 //print $ex->getCode();
 	}
-    
-    try { // Check if the products parent cat has any rules in the database
+
+    // Check if the products parent cat has any rules in the database
+    try { 
         $product_parent_cat_query = $rules_db->get(md5($product_parent_cat));
         return $product_parent_cat_query->body->markup;
 	}
@@ -93,18 +100,19 @@ function makeCouchRuleRequest($id) {
 
 function makeCouchPutRuleRequest($type, $object) {
 	global $config;
-	
+
 	try {
 		$sag = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
 		$sag->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
 		$sag->setDatabase($config['couchruledb']['database']);
-	} 
-	catch (SagCouchException $ex) {
-		// print $ex->getMessage();
-		// print $ex->getCode();
 	}
-	
+	catch (Exception $ex) {
+		 print $ex->getMessage();
+		 print $ex->getCode();
+	}
+
 	if($type == 'category') {
+        var_dump($sag);
 		// print $type;
 		$doc = json_decode($object);
 		$id = md5($doc->title);
@@ -116,7 +124,7 @@ function makeCouchPutRuleRequest($type, $object) {
 		}
 		catch(Exception $e) {
 			// 404 - document does not exist
-			// 409 - document conflict	
+			// 409 - document conflict
 			//print $e->getMessage();
 			//print $e->getCode();
 			if($e->getCode() == 404)
@@ -125,6 +133,7 @@ function makeCouchPutRuleRequest($type, $object) {
 	}
 	else if($type == 'subcat') {
 		$doc = json_decode($object);
+        echo $doc->_id;
         $id = md5($doc->_id);
         try {
             $doc_check = $sag->get($id)->body;
@@ -133,11 +142,13 @@ function makeCouchPutRuleRequest($type, $object) {
             $sag->put($id, json_encode($doc));
         } catch (Exception $e) {
             if($e->getcode() == 404)
+                //echo $e->getMessage();
+                //echo $e->getCode();
                 $sag->put($id, json_encode($doc));
         }
 	}
 	else if($type == 'product') {
-		
+
 	}
 }
 
@@ -147,7 +158,7 @@ function getMarkup($id) {
 		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
 		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
 		$rules_db->setDatabase($config['couchruledb']['database']);
-        
+
         $markup_for_product = $rules_db->get($id)->body->markup;
         return $markup_for_product;
 	}

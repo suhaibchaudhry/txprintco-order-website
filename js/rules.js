@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     SidebarClickEvents();
     SubcatClickEvents();
-	
+
 });
 
 function makeCouchRuleRequest(type, object) {
@@ -21,7 +21,7 @@ function makeCouchRuleRequest(type, object) {
 	}
 	};
 	$.ajax(options);
-	
+
 }
 
 function getRules(id, edit_div ,callback) {
@@ -54,8 +54,9 @@ function SidebarClickEvents() {
                 // Add text input and button when "edit" button is clicked on a product
                 $('#menu li span.edit-category input.edit-category-edit-button').click(function (index) {
                     var title_of_category = $(this).parent().parent().find("a").text();
+                    $(this).parent().find('input.edit-category-edit-button').hide();
                     getRules({ get_rule_for: title_of_category }, $(this), function (data, clicked_button) {
-                        clicked_button.parent().find('input.edit-category-edit-button').hide();
+                        // clicked_button.parent().find('input.edit-category-edit-button').hide();
                         clicked_button.parent().append('<input type="text" placeholder="' + title_of_category + '" value="' +data+ '" class="edit-category-markup-input"><input type="submit" value="Done" class="edit-category-done-button">');
                         if ($('#menu li span.edit-category input.edit-category-done-button').length) {
                             $('#menu li span.edit-category input.edit-category-done-button').click(function () {
