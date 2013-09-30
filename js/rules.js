@@ -2,6 +2,7 @@ $(document).ready(function () {
 
     SidebarClickEvents();
     SubcatClickEvents();
+    EventListenerRunsizes();
 
 });
 
@@ -128,4 +129,83 @@ function SubcatClickEvents() {
             //console.log(subcat_heading_div.has('span.edit-subcat'));
         }
     });
+}
+
+function EventListenerRunsizes() {
+    var $runsize_cache = $('.runsizes');
+
+    $runsize_cache.change(function() {
+        $runsize_rules_wrap_cache = $('.runsizes-rules-wrap');
+        var picked_runsize = $runsize_cache.find('option:selected').val();
+        console.log(picked_runsize);
+        if(picked_runsize == 'select') {
+            $runsize_rules_wrap_cache.html('Pick a runsize..');
+        } else {
+            $runsize_rules_wrap_cache.empty();
+            var content = '';
+            content  = '<div class="runssize-rules-click-nav"><ul class="no-js">';
+            content += '<li>';
+            content += '<input type="submit" value="Rules for: '+picked_runsize+' runsize" class="runsize-rules clicker">';
+            content += '<ul class="inner-runsize-rule">';
+            content += '<li><span>Markup: </span><input type="select" placeholder="Markup Percentage..." runsize" class="runsize-markup-rule"></li>';
+            content += '<li><span>Promotion: </span><input type="select" placeholder="Promotion Percentage..." runsize" class="runsize-promotion-rule"></li>';
+            content += '<li><span>Flat: </span><input type="select" placeholder="Flat Rate..." runsize" class="runsize-flat-rule"></li>';
+            content += '<li class="runsize-pick-default">';
+            content += 'Pick Default:<span class="radio-error"></span> <br>';
+            content += '<input type="radio" name="pick-default" id="pick-default" value="markup">Markup';
+            content += '<input type="radio" name="pick-default" id="pick-default" value="promotion">Promotion';
+            content += '<input type="radio" name="pick-default" id="pick-default" value="flat">Flat Rate';
+            content += '</li>';
+            content += '<li><input type="submit" value="Done" class="runsize-rule-submit"></li>';
+            content += '</ul></li></ul></div>';;
+            $runsize_rules_wrap_cache.html(content);
+
+            var $runsize_wrap_cache = $('.runsizes-wrap');
+            var runsize_wrap_height = $runsize_wrap_cache.css('height');
+            $('.runssize-rules-click-nav > ul').toggleClass('no-js js');
+            $('.runssize-rules-click-nav .js ul').hide();
+            $('.runssize-rules-click-nav .runsize-rules').click(function(e) {
+                var inner_runsize_rule_display = $('.inner-runsize-rule').css('display');
+                $('.runssize-rules-click-nav .js ul').slideToggle(200);
+                $('.clicker').toggleClass('active');
+                var ul_height = $('.inner-runsize-rule')[0].scrollHeight;
+                if(inner_runsize_rule_display == 'none'){
+                    $runsize_wrap_cache.css('height', ul_height + 20);
+                    e.stopPropagation();
+                } else {
+                    $runsize_wrap_cache.css('height', runsize_wrap_height);
+                }
+            });
+
+            var $runsize_rules_cache = $runsize_rules_wrap_cache.find('.runssize-rules-click-nav');
+            var $runsize_rules_button = $runsize_rules_wrap_cache.find('.runsize-rule-submit');
+            $runsize_rules_button.click(function(){
+                var input_values = {};
+                // Validate inputs
+                var markup_input    = $runsize_rules_cache.find('.runsize-markup-rule').val().trim();
+                var promotion_input = $runsize_rules_cache.find('.runsize-promotion-rule').val().trim();
+                var flat_rate_input = $runsize_rules_cache.find('.runsize-flat-rule').val().trim();
+                var checked = null;
+                var inputs = document.getElementsByName('pick-default');
+                for (var i = 0; i < inputs.length; i++) {
+                      if (inputs[i].checked) {
+                       checked = inputs[i];
+                   }
+                }
+                if(checked==null) {
+                    $('.runssize-rules-click-nav .radio-error').html(' Please choose a value.');
+                }
+                else {
+                    $('.runssize-rules-click-nav .radio-error').empty();
+                    input_values = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    // console.log(input_values);
+                    ProductRunsizeClickEvents(input_values);
+                }
+            });
+        }
+    });
+}
+
+function ProductRunsizeClickEvents(values) {
+    console.log(values);
 }

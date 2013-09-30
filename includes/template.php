@@ -41,7 +41,7 @@ function template_products_with_subcat()
 		}
 		$content .= '</div>';
 	}
-	
+
 	return $content;
 }
 
@@ -61,9 +61,9 @@ function template_product_details()
 	$content .= '<div class="product-title"><h3>Title: '.$product_details->rows[0]->value->title.'</h3></div>';
 	//$content .= '<div class="product-base-price"><h3>Base Price: '.$product_details->rows[0]->value->base_price.'</h3></div>';
 	$content .= '<div class="product-base-price" data-price-title="Base Price" data-base-price="$0.00"><h3><span class="price-title">Base Price</span>: <span class="base-price">$0.00</span></h3></div>';
-	if(check_user() == 'admin')$content .= '<div class="original-product-base-price" data-original-price-title="Orignal Base Price" data-original-base-price="$0.00"><h3><span class="original-price-title">Original Base Price</span>: <span class="original-base-price">$0.00</span></h3></div>';
+	if(check_user() == 'admin')$content .= '<div class="original-product-base-price" data-original-price-title="Original Base Price" data-original-base-price="$0.00"><h3><span class="original-price-title">Original Base Price</span>: <span class="original-base-price">$0.00</span></h3></div>';
 	$content .= '<h2>Select a runsize:</h2>';
-	
+
 	$content .= '<div class="runsizes-wrap">';
 	$content .= '<select name="runsize" class="runsizes">';
 	$content .= '<option value="select">--Select Runsize--</option>';
@@ -71,16 +71,17 @@ function template_product_details()
 		$content .= '<option>' .$runsize . '</option>';
 	}
 	$content .= '</select>';
+	if(check_user() == 'admin') $content .= '<div class="runsizes-rules-wrap">Pick a runsize..</div>';
 	$content .= '</div>';
-				
+
 	$content .= '<div class="colors-wrap"></div>';
 	$content .= '<div class="tat-wrap"></div>';
 	$content .= '<div class="options-wrap"></div>';
-	
+
 	$content .= '<div class="shipping-wrap"></div>';
 
 	$content .= '<div class="order-details"></div>';
-	
+
 	$content .= '</div>';
 	return $content;
 }

@@ -120,3 +120,44 @@ select
     float: left;
     margin-right: 5px;
 }
+
+.runsizes-wrap {
+	overflow: hidden;
+}
+
+.runsizes {
+	float: left;
+}
+
+.runsizes-rules-wrap {
+	width: 230px;
+	float: left;
+	padding-left: 10px;
+}
+
+/*
+	RUNSIZE RULES
+		DROPDOWN
+*/
+.runssize-rules-click-nav {/*margin:100px auto;*/ width:200px;}
+.runssize-rules-click-nav ul {position:relative;}
+.runssize-rules-click-nav ul li {position:relative;list-style:none;}
+.runssize-rules-click-nav ul li ul {position:absolute;left:0;right:0;}
+.runssize-rules-click-nav ul .clicker {position:relative;/*background:#2284B5;color:#FFF;*/}
+/*.runssize-rules-click-nav ul .clicker:hover,.runssize-rules-click-nav ul .active {background:#196F9A;}*/
+/*.runssize-rules-click-nav img {position:absolute;top:9px;left:12px;}*/
+.runssize-rules-click-nav ul li input.runsize-rules {transition:background-color 0.2s ease-in-out;-webkit-transition:background-color 0.2s ease-in-out;
+-moz-transition:background-color 0.2s ease-in-out;display:block;/*padding:8px 10px 8px 40px;background:#FFF;color:#333;text-decoration:none;*/}
+/*.runssize-rules-click-nav ul li input:hover {background:#F2F2F2;}*/
+
+/* Fallbacks */
+.runssize-rules-click-nav .no-js ul {display:none;}
+.runssize-rules-click-nav .no-js:hover ul {display:block;}
+
+.inner-runsize-rule li span {
+	white-space:pre-wrap;
+}
+
+.radio-error {
+	color: red;
+}

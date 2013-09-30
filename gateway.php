@@ -51,7 +51,7 @@ if($orig_url == '/db/best_price') {
 } else if($orig_url == '/db/price') {
     $rule_markup = makeCouchRuleRequest($key_array[0]);
     //echo $key_array[0];
-    echo $rule_markup;
+    // echo $rule_markup;
 	$products = makeCouchRequest($url, false, $_GET);
 	foreach($products->rows[0]->value as $tat) {
 		$tat->base_price = apply_factor(MARKUP, $tat->base_price);

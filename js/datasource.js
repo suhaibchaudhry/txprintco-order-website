@@ -38,7 +38,7 @@ function template_get_colors(runsize) {
 	var  colors, count;
 	var mycount = 0;
 	mycount++;
-	console.log(mycount);
+	// console.log(mycount);
 
 	//makeCouchRequest(js_config['base_path']+"db/_design/txprintco/_view/colors", function(data){ // For Apache
 		makeCouchRequest(js_config['base_path']+"db/colors", function(data){
