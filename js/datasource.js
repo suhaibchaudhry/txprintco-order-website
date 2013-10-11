@@ -234,7 +234,7 @@ function makeCouchRequest(url, callback, data, middleware) {
 		type: "GET",
 		//contentType: "json",
 		success: function(data) {
-			// console.log(data);
+			console.log(data);
 			callback(jQuery.parseJSON(data));
 		},
 		error: function(xhr,status,error) {
@@ -300,7 +300,7 @@ function get_best_price(runsize, color, original) {
 function render_base_price(subtotal) {
 	var count = 0;
 	count++;
-	console.log(count);
+	// console.log(count);
 	$product_datails.find('.product-base-price span.price-title').html('Subtotal');
 	$product_datails.find('.product-base-price span.base-price').html(subtotal);
 }

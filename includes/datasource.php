@@ -36,16 +36,19 @@ function makeCouchRequest($request, $json_output = FALSE, $reqData = NULL) {
 	return $data;
 }
 
-function makeCouchRuleRequest($id) {
+function makeCouchRuleRequest($options) {
 	global $config;
-    try {
-		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
-		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
-		$rules_db->setDatabase($config['couchruledb']['database']);
+  $id = $options[0];
+  $runsize = $options[1];
+  // var_dump("Runsize in datasource.php: " . $runsize);
+  try {
+	$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
+	$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
+	$rules_db->setDatabase($config['couchruledb']['database']);
 
-        $products_db = new Sag($config['couchdb']['host'], $config['couchdb']['port']);
-		$products_db->login($config['couchdb']['user'], $config['couchdb']['pass']);
-		$products_db->setDatabase($config['couchdb']['database']);
+  $products_db = new Sag($config['couchdb']['host'], $config['couchdb']['port']);
+	$products_db->login($config['couchdb']['user'], $config['couchdb']['pass']);
+	$products_db->setDatabase($config['couchdb']['database']);
 	}
 	catch (SagCouchException $ex ) {
 		 print $ex->getMessage();
@@ -58,44 +61,59 @@ function makeCouchRuleRequest($id) {
 
         $product_parent_cat = $doc->parent_cat->title;
         $product_subcat = $doc->subcat;
-	}
-	catch (SagCouchException $ex ) {
-		 //print $ex->getMessage();
-		 //print $ex->getCode();
-	}
+  	}
+  	catch (SagCouchException $ex ) {
+  		 //print $ex->getMessage();
+  		 //print $ex->getCode();
+  	}
 
     // Check if the product has any rules in the rules_db
-    try { 
-        $product_query = $rules_db->get($id);
-        //var_dump($product_query);
-	}
-	catch (SagCouchException $ex ) {
-		 //print $ex->getMessage();
-		 //print $ex->getCode();
-	}
-    
+    try {
+        $product_runsizes_query = $rules_db->get($id)->body->runsizes;
+        foreach ($product_runsizes_query as $product_runsize => $data) {
+          if ($product_runsize == $runsize) {
+            // var_dump("Match found for runsize: " . $runsize);
+            $default_markup = $data->default;
+            // var_dump($default_markup);
+            if($default_markup == 'flat') {
+              // var_dump($data->default_markup);
+              $markup_array = array('flat' => $data->$default_markup );
+              // var_dump($markup_array);
+              return $markup_array;
+            } else {
+              return $data->$default_markup;
+            }
+
+          }
+        }
+  	}
+  	catch (SagCouchException $ex ) {
+  		 //print $ex->getMessage();
+  		 //print $ex->getCode();
+  	}
+
     // Check if the products subcat has any rules in the database
     try {
         $concat_parentcat_subcat = $product_parent_cat.$product_subcat;
         //echo md5($concat_parentcat_subcat);
         $product_subcat_query = $rules_db->get(md5($concat_parentcat_subcat));
         return $product_subcat_query->body->markup;
-	}
-	catch (SagCouchException $ex ) {
-		 //print $ex->getMessage();
-		 //print $ex->getCode();
-	}
+  	}
+  	catch (SagCouchException $ex ) {
+  		 //print $ex->getMessage();
+  		 //print $ex->getCode();
+  	}
 
     // Check if the products parent cat has any rules in the database
-    try { 
+    try {
         $product_parent_cat_query = $rules_db->get(md5($product_parent_cat));
         return $product_parent_cat_query->body->markup;
-	}
-	catch (SagCouchException $ex ) { // return false here because there are no rules for the product in the rules database
-		 //print $ex->getMessage();
-		 //print $ex->getCode();
-         return false;
-	}
+  	}
+  	catch (SagCouchException $ex ) { // return false here because there are no rules for the product in the rules database
+  		 //print $ex->getMessage();
+  		 //print $ex->getCode();
+           return false;
+  	}
 }
 
 function makeCouchPutRuleRequest($type, $object) {
@@ -112,15 +130,15 @@ function makeCouchPutRuleRequest($type, $object) {
 	}
 
 	if($type == 'category') {
-        var_dump($sag);
+        // var_dump($sag);
 		// print $type;
 		$doc = json_decode($object);
 		$id = md5($doc->title);
 		try {
-		    $doc_check = $sag->get($id)->body;
-		    $doc_rev = $doc_check->_rev;
+	    $doc_check = $sag->get($id)->body;
+	    $doc_rev = $doc_check->_rev;
 			$doc->_rev = $doc_rev;
-            $sag->put($id, json_encode($doc));
+      $sag->put($id, json_encode($doc));
 		}
 		catch(Exception $e) {
 			// 404 - document does not exist
@@ -133,39 +151,118 @@ function makeCouchPutRuleRequest($type, $object) {
 	}
 	else if($type == 'subcat') {
 		$doc = json_decode($object);
-        echo $doc->_id;
-        $id = md5($doc->_id);
-        try {
-            $doc_check = $sag->get($id)->body;
-            $doc_rev = $doc_check->_rev;
-            $doc->_rev = $doc_rev;
+    echo $doc->_id;
+    $id = md5($doc->_id);
+    try {
+        $doc_check = $sag->get($id)->body;
+        $doc_rev = $doc_check->_rev;
+        $doc->_rev = $doc_rev;
+        $sag->put($id, json_encode($doc));
+    } catch (Exception $e) {
+        if($e->getcode() == 404)
+            //echo $e->getMessage();
+            //echo $e->getCode();
             $sag->put($id, json_encode($doc));
-        } catch (Exception $e) {
-            if($e->getcode() == 404)
-                //echo $e->getMessage();
-                //echo $e->getCode();
-                $sag->put($id, json_encode($doc));
         }
 	}
 	else if($type == 'product') {
+    // var_dump('makeCouchPutRuleRequest product statement hit.');
 
+    $doc = json_decode($object);
+    // var_dump($doc);
+    $id = $doc->_id;
+    // var_dump($doc_runsize);
+    // var_dump($doc);
+    foreach ($doc as $key => $value) {
+      if($key == 'runsizes') {
+        foreach ($value as $key => $value) {
+          $doc_runsize = $key;
+        }
+      }
+    }
+    try {
+      $product_check = $sag->get($id)->body;
+      $product_rev = $product_check->_rev;
+      // var_dump($product_check);
+      $product_check_runsizes = $product_check->runsizes;
+      // var_dump($product_check_runsizes);
+      var_dump($product_check);
+      // var_dump($product_check_runsizes);
+      foreach ($product_check_runsizes as $key => $value) {
+        // var_dump($key);
+        if($key == $doc_runsize) /* If a runsize is already in the database, update it with the new values passed in*/
+        {
+          // var_dump("Match Found!");
+          // var_dump($product_check_runsizes->$key);
+          // var_dump($doc->runsizes->$key);
+          $product_check_runsizes->$key = $doc->runsizes->$key;
+          // var_dump("The overridden object is:");
+          // var_dump($product_check_runsizes->$key);
+          // var_dump($product_check_runsizes);
+          // var_dump($product_check);
+          $product_check->runsizes = $product_check_runsizes;
+          // var_dump($product_check);
+          $sag->put($id, json_encode($product_check));
+          return;
+        }
+      }
+      $doc->_rev = $doc_rev;
+      // var_dump($product_check->runsizes);
+      // var_dump($doc->runsizes);
+      // array_push($product_check->runsizes, $doc->runsizes);
+      foreach ($doc->runsizes as $key => $value) {
+        // var_dump($key);
+        $product_check->runsizes->$key = $value;
+        $sag->put($id, json_encode($product_check));
+        return;
+      }
+      // var_dump($product_check);
+    } catch (Exception $e) {
+      if($e->getcode() == 404){
+        $sag->put($id, json_encode($doc));
+      }
+    }
 	}
 }
 
-function getMarkup($id) {
-    global $config;
-    try {
+function getMarkup($id, $options) {
+  global $config;
+  // var_dump($options['type']);
+  try {
 		$rules_db = new Sag($config['couchruledb']['host'], $config['couchruledb']['port']);
 		$rules_db->login($config['couchruledb']['user'], $config['couchruledb']['pass']);
 		$rules_db->setDatabase($config['couchruledb']['database']);
 
-        $markup_for_product = $rules_db->get($id)->body->markup;
-        return $markup_for_product;
+    if($options['type'] == 'categories') {
+      // var_dump("Inside categories if statement");
+      // var_dump($options);
+      $markup_for_product = $rules_db->get($id)->body->markup;
+      // var_dump($markup_for_product);
+      return $markup_for_product;
+    } else if ($options['type'] == 'subcat') {
+      $markup_for_product = $rules_db->get($id)->body->markup;
+      return $markup_for_product;
+    } else if ($options['type'] == 'product') {
+      // var_dump("Inside getMarkup function");
+      // var_dump($options);
+      // var_dump($id);
+      $requested_runsize = $options['runsize'];
+      $markup_object_for_product = $rules_db->get($id)->body;
+      // var_dump($markup_object_for_product->runsizes);
+      foreach ($markup_object_for_product->runsizes as $runsize => $object) {
+        if($runsize == $requested_runsize) {
+          // var_dump("Match found");
+          // var_dump($object);
+          return $object;
+        }
+      }
+      return false;
+    }
 	}
 	catch (SagCouchException $ex ) {
-		 //print $ex->getMessage();
-		 //print $ex->getCode();
-         return false;
+		 // print $ex->getMessage();
+		 // print $ex->getCode();
+     return false;
 	}
 }
 

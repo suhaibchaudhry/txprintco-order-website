@@ -10,7 +10,7 @@ function makeCouchRuleRequest(type, object) {
 	var myObject = {};
 	myObject['rule_type'] = type;
 	myObject['doc'] = JSON.stringify(object);
-	console.log(myObject);
+	// console.log(myObject);
 	var options = {
 	url: 'gateway.php',
 	data: myObject,
@@ -25,10 +25,11 @@ function makeCouchRuleRequest(type, object) {
 
 }
 
-function getRules(id, edit_div ,callback) {
+function getRules(get_obj, edit_div , callback) {
+    // console.log(get_obj);
     var options = {
         url: 'gateway.php',
-        data: id,
+        data: get_obj,
         type: "GET",
         success: function (data) {
             //callback(jQuery.parseJSON(data));
@@ -56,8 +57,9 @@ function SidebarClickEvents() {
                 $('#menu li span.edit-category input.edit-category-edit-button').click(function (index) {
                     var title_of_category = $(this).parent().parent().find("a").text();
                     $(this).parent().find('input.edit-category-edit-button').hide();
-                    getRules({ get_rule_for: title_of_category }, $(this), function (data, clicked_button) {
+                    getRules({ get_rule_for: title_of_category, options : {type : "categories"}}, $(this), function (data, clicked_button) {
                         // clicked_button.parent().find('input.edit-category-edit-button').hide();
+                        // console.log(data);
                         clicked_button.parent().append('<input type="text" placeholder="' + title_of_category + '" value="' +data+ '" class="edit-category-markup-input"><input type="submit" value="Done" class="edit-category-done-button">');
                         if ($('#menu li span.edit-category input.edit-category-done-button').length) {
                             $('#menu li span.edit-category input.edit-category-done-button').click(function () {
@@ -103,9 +105,9 @@ function SubcatClickEvents() {
                     var title_of_subcat = $(this).parent().parent().find('h2').text();
                     var title_of_category = js_config['product_cat'];
                     var subcat_cat_concat = title_of_category+title_of_subcat;
-                    getRules({ get_rule_for: subcat_cat_concat }, $(this), function (data, clicked_button) {
-                        console.log(data);
-                        console.log(clicked_button);
+                    getRules({ get_rule_for : subcat_cat_concat, options : {type : "subcat"}}, $(this), function (data, clicked_button) {
+                        // console.log(data);
+                        // console.log(clicked_button);
                         clicked_button.hide();
                         clicked_button.parent().append('<input type="text" placeholder="' + title_of_subcat + '" value="' + data + '" class="edit-subcat-markup-input"><input type="submit" value="Done" class="edit-subcat-done-button">');
                         clicked_button.parent().find('input.edit-subcat-done-button').click(function () {
@@ -137,7 +139,7 @@ function EventListenerRunsizes() {
     $runsize_cache.change(function() {
         $runsize_rules_wrap_cache = $('.runsizes-rules-wrap');
         var picked_runsize = $runsize_cache.find('option:selected').val();
-        console.log(picked_runsize);
+        // console.log(picked_runsize);
         if(picked_runsize == 'select') {
             $runsize_rules_wrap_cache.html('Pick a runsize..');
         } else {
@@ -145,11 +147,11 @@ function EventListenerRunsizes() {
             var content = '';
             content  = '<div class="runssize-rules-click-nav"><ul class="no-js">';
             content += '<li>';
-            content += '<input type="submit" value="Rules for: '+picked_runsize+' runsize" class="runsize-rules clicker">';
+            content += '<input type="submit" value="Rules for: '+picked_runsize+'" class="runsize-rules clicker">';
             content += '<ul class="inner-runsize-rule">';
-            content += '<li><span>Markup: </span><input type="select" placeholder="Markup Percentage..." runsize" class="runsize-markup-rule"></li>';
-            content += '<li><span>Promotion: </span><input type="select" placeholder="Promotion Percentage..." runsize" class="runsize-promotion-rule"></li>';
-            content += '<li><span>Flat: </span><input type="select" placeholder="Flat Rate..." runsize" class="runsize-flat-rule"></li>';
+            content += '<li><span>Markup: </span><input type="select" placeholder="Markup Percentage..." class="runsize-markup-rule"></li>';
+            content += '<li><span>Promotion: </span><input type="select" placeholder="Promotion Percentage..." class="runsize-promotion-rule"></li>';
+            content += '<li><span>Flat: </span><input type="select" placeholder="Flat Rate..." class="runsize-flat-rule"></li>';
             content += '<li class="runsize-pick-default">';
             content += 'Pick Default:<span class="radio-error"></span> <br>';
             content += '<input type="radio" name="pick-default" id="pick-default" value="markup">Markup';
@@ -159,6 +161,29 @@ function EventListenerRunsizes() {
             content += '<li><input type="submit" value="Done" class="runsize-rule-submit"></li>';
             content += '</ul></li></ul></div>';;
             $runsize_rules_wrap_cache.html(content);
+
+            // Get the rules object the rules database and pre-fill the rule input for the runsize
+            getRules({ get_rule_for : js_config['product_id'], options : {type : "product", runsize : picked_runsize}}, $(this), function (data, clicked_button) {
+                var inner_rules_div = $('.inner-runsize-rule');
+                // console.log(inner_rules_div);
+                // console.log(JSON.parse(data));
+                if(data){
+                    data = JSON.parse(data);
+                    // console.log(inner_rules_div.find('.runsize-markup-rule'));
+                    // console.log(inner_rules_div.find('.runsize-promotion-rule'));
+                    // console.log(inner_rules_div.find('.runsize-flat-rule'));
+                    // console.log(inner_rules_div.find('#pick-default'));
+                    inner_rules_div.find('.runsize-markup-rule').val(data['markup']);
+                    inner_rules_div.find('.runsize-promotion-rule').val(data['promotion']);
+                    inner_rules_div.find('.runsize-flat-rule').val(data['flat']);
+                    var $radios = $('input:radio[name=pick-default]');
+                    // console.log($radios);
+                    if($radios.is(':checked') === false) {
+                        $radios.filter('[value='+data['default']+']').prop('checked', true);
+                    }
+                }
+
+            });
 
             var $runsize_wrap_cache = $('.runsizes-wrap');
             var runsize_wrap_height = $runsize_wrap_cache.css('height');
@@ -179,7 +204,7 @@ function EventListenerRunsizes() {
 
             var $runsize_rules_cache = $runsize_rules_wrap_cache.find('.runssize-rules-click-nav');
             var $runsize_rules_button = $runsize_rules_wrap_cache.find('.runsize-rule-submit');
-            $runsize_rules_button.click(function(){
+            $runsize_rules_button.click(function(e){
                 var input_values = {};
                 // Validate inputs
                 var markup_input    = $runsize_rules_cache.find('.runsize-markup-rule').val().trim();
@@ -197,15 +222,36 @@ function EventListenerRunsizes() {
                 }
                 else {
                     $('.runssize-rules-click-nav .radio-error').empty();
-                    input_values = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    input_values[picked_runsize] = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    // input_values[40000] = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    // input_values[50000] = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    // input_values[100000] = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
+                    // input_values[15000] = {markup : markup_input, promotion : promotion_input, flat : flat_rate_input, default: checked.value};
                     // console.log(input_values);
-                    ProductRunsizeClickEvents(input_values);
+                    ProductRunsizeDoneEvent(input_values, $runsize_rules_button);
+                    var inner_runsize_rule_display = $('.inner-runsize-rule').css('display');
+                    $('.runssize-rules-click-nav .js ul').slideToggle(200);
+                    $('.clicker').toggleClass('active');
+                    var ul_height = $('.inner-runsize-rule')[0].scrollHeight;
+                    if(inner_runsize_rule_display == 'none'){
+                        $runsize_wrap_cache.css('height', ul_height + 20);
+                        e.stopPropagation();
+                    } else {
+                        $runsize_wrap_cache.css('height', runsize_wrap_height);
+                    }
+
                 }
             });
         }
     });
 }
 
-function ProductRunsizeClickEvents(values) {
-    console.log(values);
+function ProductRunsizeDoneEvent(values, submit_button) {
+	var myProductDocument = {};
+	myProductDocument['_id'] = js_config['product_id'];
+	myProductDocument['type'] = 'product';
+	myProductDocument['runsizes'] = values;
+
+	makeCouchRuleRequest('product', myProductDocument);
+
 }
